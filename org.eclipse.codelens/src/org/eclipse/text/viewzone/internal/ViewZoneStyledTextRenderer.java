@@ -23,49 +23,67 @@ public class ViewZoneStyledTextRenderer extends StyledTextRendererEmulator {
 	protected TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpacing, Object obj,
 			Method proceed, Object[] args) throws Exception {
 		TextLayout layout = super.getTextLayout(lineIndex, orientation, width, lineSpacing, obj, proceed, args);
-		IViewZone viewZone = accessor.getViewZone(lineIndex);
-		if (viewZone != null && layout.getSpacing() != viewZone.getHeightInPx()) {
+		int lineNumber = lineIndex + 1;
+		IViewZone viewZone = accessor.getViewZone(lineNumber);
+		if (viewZone != null) {
+			// There is view zone to render for the given line, update the line
+			// spacing of the TextLayout linked to this line number.
 			layout.setSpacing(viewZone.getHeightInPx());
-			updateSpacing(getText());
+			StyledTextRendererHelper.updateSpacing(getText());
 		}
 		return layout;
-	}
-
-	private void updateSpacing(StyledText text) {
-		try {
-			// text.setVariableLineHeight();
-			Method m1 = text.getClass().getDeclaredMethod("setVariableLineHeight");
-			m1.setAccessible(true);
-			m1.invoke(text);
-
-			// text.resetCache(0, text.getContent().getLineCount());
-			// Method m2 = text.getClass().getDeclaredMethod("resetCache",
-			// new Class[] { int.class, int.class });
-			// m2.setAccessible(true);
-			// m2.invoke(text, 0, text.getContent().getLineCount());
-			//
-			// // text.setCaretLocation();
-			// Method m3 =
-			// text.getClass().getDeclaredMethod("setCaretLocation");
-			// m3.setAccessible(true);
-			// m3.invoke(text);
-
-			// text.redraw();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Override
 	protected int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackground, Color widgetForeground,
 			Object obj, Method proceed, Object[] args) throws Exception {
-		int result = super.drawLine(lineIndex, paintX, paintY, gc, widgetBackground, widgetForeground, obj, proceed,
+		// Render the ine
+		int lineHeight = super.drawLine(lineIndex, paintX, paintY, gc, widgetBackground, widgetForeground, obj, proceed,
 				args);
-		IViewZone viewZone = accessor.getViewZone(lineIndex);
-		if (viewZone != null) {
-			gc.setForeground(getText().getDisplay().getSystemColor(SWT.COLOR_GRAY));
-			gc.drawText(viewZone.getText(), paintX, paintY + viewZone.getHeightInPx());
+
+		// Render the view zone
+		StyledText text = super.getText();
+		if (lineIndex == 0) {
+			IViewZone viewZone = accessor.getViewZone(lineIndex);
+			if (viewZone != null) {
+				// Case for line number equals to 0:
+				// - update the top margin of StyledText with height of the view
+				// zone.
+				// - renderer the view zone in the top margin of StyledText
+				// area.
+				int height = viewZone.getHeightInPx();
+				if (getText().getTopMargin() != height) {
+					getText().setTopMargin(height);
+				}
+				GC g = new GC(getText());
+				g.setBackground(gc.getBackground());
+				g.setForeground(gc.getForeground());
+				int x = paintX;
+				int y = paintY - height;
+				int width = gc.getLineWidth() > 0 ? gc.getLineWidth() : 1;
+				g.drawRectangle(x, y, width, height);
+				drawViewZone(viewZone, x, y, g);
+				g.dispose();
+			} else {
+				int height = 0;
+				if (getText().getTopMargin() != height) {
+					getText().setTopMargin(height);
+				}
+			}
 		}
-		return result;
+
+		IViewZone viewZone = accessor.getViewZone(lineIndex + 1);
+		if (viewZone != null) {
+			// Case for line number > 0:
+			// - renderer the view zone in this after the line (in the line
+			// spacing updated in the TextLayout).
+			drawViewZone(viewZone, paintX, paintY + viewZone.getHeightInPx(), gc);
+		}
+		return lineHeight;
+	}
+
+	private void drawViewZone(IViewZone viewZone, int paintX, int paintY, GC gc) {
+		gc.setForeground(getText().getDisplay().getSystemColor(SWT.COLOR_GRAY));
+		gc.drawText(viewZone.getText(), paintX, paintY);
 	}
 }

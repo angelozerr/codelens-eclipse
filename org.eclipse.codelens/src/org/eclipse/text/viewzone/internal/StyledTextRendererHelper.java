@@ -86,4 +86,29 @@ public class StyledTextRendererHelper {
 		}
 		return SET_FONT_METHOD;
 	}
+	
+	public static void updateSpacing(StyledText text) {
+		try {
+			// text.setVariableLineHeight();
+			Method m1 = text.getClass().getDeclaredMethod("setVariableLineHeight");
+			m1.setAccessible(true);
+			m1.invoke(text);
+
+			// text.resetCache(0, text.getContent().getLineCount());
+			// Method m2 = text.getClass().getDeclaredMethod("resetCache",
+			// new Class[] { int.class, int.class });
+			// m2.setAccessible(true);
+			// m2.invoke(text, 0, text.getContent().getLineCount());
+			//
+			// // text.setCaretLocation();
+			// Method m3 =
+			// text.getClass().getDeclaredMethod("setCaretLocation");
+			// m3.setAccessible(true);
+			// m3.invoke(text);
+
+			// text.redraw();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
