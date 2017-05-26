@@ -6,6 +6,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.text.viewzone.IViewZone;
 import org.eclipse.text.viewzone.ViewZoneChangeAccessor;
@@ -83,7 +84,11 @@ public class ViewZoneStyledTextRenderer extends StyledTextRendererEmulator {
 	}
 
 	private void drawViewZone(IViewZone viewZone, int paintX, int paintY, GC gc) {
-		gc.setForeground(getText().getDisplay().getSystemColor(SWT.COLOR_GRAY));
+		StyledText styledText = getText();
+		Rectangle client = styledText.getClientArea();
+		gc.setBackground(styledText.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+		styledText.drawBackground(gc, paintX, paintY, client.width, viewZone.getHeightInPx());
+		gc.setForeground(styledText.getDisplay().getSystemColor(SWT.COLOR_GRAY));
 		gc.drawText(viewZone.getText(), paintX, paintY);
 	}
 }

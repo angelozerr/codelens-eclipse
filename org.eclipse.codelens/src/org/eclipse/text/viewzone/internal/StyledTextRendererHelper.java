@@ -70,23 +70,23 @@ public class StyledTextRendererHelper {
 	}
 
 	private static Method getSetContentMethod(Object viewZoneRenderer) throws NoSuchMethodException {
-		if (SET_CONTENT_METHOD == null) {
+		//if (SET_CONTENT_METHOD == null) {
 			SET_CONTENT_METHOD = viewZoneRenderer.getClass().getDeclaredMethod("setContent",
 					new Class[] { StyledTextContent.class });
 			SET_CONTENT_METHOD.setAccessible(true);
-		}
+		//}
 		return SET_CONTENT_METHOD;
 	}
 
 	private static Method getSetFontMethod(Object viewZoneRenderer) throws NoSuchMethodException {
-		if (SET_FONT_METHOD == null) {
+		//if (SET_FONT_METHOD == null) {
 			SET_FONT_METHOD = viewZoneRenderer.getClass().getDeclaredMethod("setFont",
 					new Class[] { Font.class, int.class });
 			SET_FONT_METHOD.setAccessible(true);
-		}
+		//}
 		return SET_FONT_METHOD;
 	}
-	
+
 	public static void updateSpacing(StyledText text) {
 		try {
 			// text.setVariableLineHeight();
