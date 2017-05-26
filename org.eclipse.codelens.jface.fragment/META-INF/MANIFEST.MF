@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Fragment
-Bundle-SymbolicName: org.eclipse.codelens.fragment
+Bundle-SymbolicName: org.eclipse.codelens.jface.fragment
 Bundle-Version: 1.0.0.qualifier
-Fragment-Host: org.eclipse.swt;bundle-version="3.105.3"
+Fragment-Host: org.eclipse.jface.text
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: javassist,
