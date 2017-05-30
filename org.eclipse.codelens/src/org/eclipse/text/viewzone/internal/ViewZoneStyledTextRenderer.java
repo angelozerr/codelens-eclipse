@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
@@ -16,7 +17,7 @@ public class ViewZoneStyledTextRenderer extends StyledTextRendererEmulator {
 	private final ViewZoneChangeAccessor accessor;
 
 	public ViewZoneStyledTextRenderer(ViewZoneChangeAccessor accessor) {
-		super(accessor.getText());
+		super(accessor.getStyledText());
 		this.accessor = accessor;
 	}
 
@@ -63,7 +64,7 @@ public class ViewZoneStyledTextRenderer extends StyledTextRendererEmulator {
 				int y = paintY - height;
 				int width = gc.getLineWidth() > 0 ? gc.getLineWidth() : 1;
 				g.drawRectangle(x, y, width, height);
-				drawViewZone(viewZone, x, y, g);
+				drawViewZone(viewZone, x, y, g, getText());
 				g.dispose();
 			} else {
 				int height = 0;
@@ -78,17 +79,12 @@ public class ViewZoneStyledTextRenderer extends StyledTextRendererEmulator {
 			// Case for line number > 0:
 			// - renderer the view zone in this after the line (in the line
 			// spacing updated in the TextLayout).
-			drawViewZone(viewZone, paintX, paintY + viewZone.getHeightInPx(), gc);
+			drawViewZone(viewZone, paintX, paintY + viewZone.getHeightInPx(), gc, getText());
 		}
 		return lineHeight;
 	}
 
-	private void drawViewZone(IViewZone viewZone, int paintX, int paintY, GC gc) {
-		StyledText styledText = getText();
-		Rectangle client = styledText.getClientArea();
-		gc.setBackground(styledText.getDisplay().getSystemColor(SWT.COLOR_WHITE));
-		styledText.drawBackground(gc, paintX, paintY, client.width, viewZone.getHeightInPx());
-		gc.setForeground(styledText.getDisplay().getSystemColor(SWT.COLOR_GRAY));
-		gc.drawText(viewZone.getText(), paintX, paintY);
+	private void drawViewZone(IViewZone viewZone, int paintX, int paintY, GC gc, StyledText styledText) {
+		viewZone.getRenderer().draw(viewZone, paintX, paintY, gc, styledText);
 	}
 }

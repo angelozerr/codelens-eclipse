@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.text.viewzone.DefaultViewZone;
 import org.eclipse.text.viewzone.IViewZoneChangeAccessor;
 import org.eclipse.text.viewzone.ViewZoneChangeAccessor;
 
@@ -42,7 +43,9 @@ public class ViewZoneDemo {
 						"Zone " + viewZones.getSize(), null);
 				if (dlg.open() == Window.OK) {
 					int line = widget.getLineAtOffset(widget.getCaretOffset());
-					viewZones.addZone(line, 20, dlg.getValue());
+					viewZones.addZone(new DefaultViewZone(line, 20, dlg.getValue()));
+					
+					// , dlg.getValue()
 				}
 			}
 		});

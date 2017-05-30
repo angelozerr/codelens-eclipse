@@ -1,5 +1,7 @@
 package org.eclipse.text.viewzone;
 
+import org.eclipse.swt.custom.StyledText;
+
 public interface IViewZone {
 
 	/**
@@ -14,5 +16,8 @@ public interface IViewZone {
 	
 	int getHeightInPx();
 
-	String getText();
+	void setStyledText(StyledText styledText);
+
+	IViewZoneRenderer getRenderer();
+	
 }

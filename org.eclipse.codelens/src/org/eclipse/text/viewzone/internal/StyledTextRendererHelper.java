@@ -25,7 +25,7 @@ public class StyledTextRendererHelper {
 		// recreate an instance of StyledTextRenderer with Javassist
 		Object viewZoneRenderer = createViewZoneStyledTextRenderer(accessor);
 
-		StyledText text = accessor.getText();
+		StyledText text = accessor.getStyledText();
 		// 2) Reinitialize the renderer like StyledText constructor does.
 		// renderer = new StyledTextRenderer(getDisplay(), this);
 		// renderer.setContent(content);
@@ -49,7 +49,7 @@ public class StyledTextRendererHelper {
 
 	private static /* org.eclipse.swt.custom.StyledTextRenderer */ Object createViewZoneStyledTextRenderer(
 			ViewZoneChangeAccessor accessor) throws Exception {
-		StyledText text = accessor.getText();
+		StyledText text = accessor.getStyledText();
 		// get the org.eclipse.swt.custom.StyledTextRenderer instance of
 		// StyledText
 		/* org.eclipse.swt.custom.StyledTextRenderer */ Object originalRenderer = getRendererField(text).get(text);

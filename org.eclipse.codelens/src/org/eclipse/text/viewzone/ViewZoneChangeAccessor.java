@@ -1,63 +1,65 @@
 package org.eclipse.text.viewzone;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.text.viewzone.internal.StyledTextRendererHelper;
 
 public class ViewZoneChangeAccessor implements IViewZoneChangeAccessor {
 
-	private final StyledText text;
+	private final StyledText styledText;
 	private List<IViewZone> viewZones;
-
-	public ViewZoneChangeAccessor(StyledText text) throws Exception {
-		this.text = text;
+	
+	public ViewZoneChangeAccessor(StyledText styledText) throws Exception {
+		this.styledText = styledText;
 		this.viewZones = new ArrayList<>();
 		StyledTextRendererHelper.setViewZoneStyledTextRenderer(this);
-		synch(text);
+		synch(styledText);
 	}
 
 	@Override
-	public void addZone(int line, int height, String l) {
-		addZone(new ViewZone(line, height, l, text));
-	}
-
-	private void addZone(IViewZone zone) {
+	public void addZone(IViewZone zone) {
 		viewZones.add(zone);
+		zone.setStyledText(styledText);
 		int line = zone.getAfterLineNumber();
 		if (line == 0) {
-			text.setTopMargin(zone.getHeightInPx());
-			StyledTextRendererHelper.updateSpacing(getText());
+			styledText.setTopMargin(zone.getHeightInPx());
+			StyledTextRendererHelper.updateSpacing(getStyledText());
 		} else {
 			line--;
-			int start = getText().getOffsetAtLine(line);
-			int length = getText().getText().length() - start;
-			text.redrawRange(start, length, true);
+			int start = getStyledText().getOffsetAtLine(line);
+			int length = getStyledText().getText().length() - start;
+			styledText.redrawRange(start, length, true);
 		}
 	}
 
+	@Override
 	public void removeZone(IViewZone zone) {
 		viewZones.remove(zone);
 		int line = zone.getAfterLineNumber();
 		if (line == 0) {
-			text.setTopMargin(0);
+			styledText.setTopMargin(0);
 		} else {
 			line--;
-			int start = getText().getOffsetAtLine(line);
-			int length = getText().getText().length() - start;
-			text.redrawRange(start, length, true);
+			int start = getStyledText().getOffsetAtLine(line);
+			int length = getStyledText().getText().length() - start;
+			styledText.redrawRange(start, length, true);
 		}
 	}
 	
-	public StyledText getText() {
-		return text;
+//	@Override
+//	public void layoutZone(int id) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+	
+	public StyledText getStyledText() {
+		return styledText;
 	}
 
 	public IViewZone getViewZone(int lineIndex) {

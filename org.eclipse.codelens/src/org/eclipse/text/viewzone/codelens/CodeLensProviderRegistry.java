@@ -7,6 +7,12 @@ import java.util.Map;
 
 public class CodeLensProviderRegistry {
 
+	private static final CodeLensProviderRegistry INSTANCE = new CodeLensProviderRegistry();
+	
+	public static CodeLensProviderRegistry getInstance() {
+		return INSTANCE;
+	}
+	
 	private final Map<String, Collection<ICodeLensProvider>> providersMap;
 
 	public CodeLensProviderRegistry() {
@@ -25,4 +31,5 @@ public class CodeLensProviderRegistry {
 	public Collection<ICodeLensProvider> all(String contentTypeId) {
 		return providersMap.get(contentTypeId);
 	}
+
 }

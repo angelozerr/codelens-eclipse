@@ -1,20 +1,25 @@
 package org.eclipse.text.viewzone;
 
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.text.viewzone.internal.StyledTextRendererHelper;
 
 public class ViewZone implements IViewZone {
 
-	private final StyledText styledText;
+	private StyledText styledText;
 	private int offsetAtLine;
 	private int afterLineNumber;
 	private int height;
-	private String text;
+	
+	private final IViewZoneRenderer<?> renderer;
 
-	public ViewZone(int afterLineNumber, int height, String text, StyledText styledText) {
-		this.styledText = styledText;
+	public ViewZone(int afterLineNumber, int height, IViewZoneRenderer<?> renderer) {
 		this.height = height;
-		this.text = text;
 		setAfterLineNumber(afterLineNumber);
+		this.renderer = renderer;
+	}
+
+	public void setStyledText(StyledText styledText) {
+		this.styledText = styledText;
 	}
 
 	public void setAfterLineNumber(int afterLineNumber) {
@@ -46,7 +51,20 @@ public class ViewZone implements IViewZone {
 	}
 
 	@Override
-	public String getText() {
-		return text;
+	public IViewZoneRenderer<?> getRenderer() {
+		return renderer;
+	}
+	
+	protected void redraw() {
+		int line = getAfterLineNumber();
+		if (line == 0) {
+			styledText.setTopMargin(getHeightInPx());
+			StyledTextRendererHelper.updateSpacing(styledText);
+		} else {
+			line--;
+			int start = styledText.getOffsetAtLine(line);
+			int length = styledText.getOffsetAtLine(line + 1) - start;
+			styledText.redrawRange(start, length, true);
+		}
 	}
 }

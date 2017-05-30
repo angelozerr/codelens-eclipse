@@ -1,8 +1,12 @@
 package org.eclipse.text.viewzone.codelens;
 
-import java.util.concurrent.CompletableFuture;
+import org.eclipse.jface.text.ITextViewer;
 
-public interface ICodeLensProvider<T> {
+/**
+ * A code lens provider adds [commands](#Command) to source text. The commands
+ * will be shown as dedicated horizontal lines in between the source text.
+ */
+public interface ICodeLensProvider {
 
 	/**
 	 * Compute a list of [lenses](#CodeLens). This call should return as fast as
@@ -18,15 +22,18 @@ public interface ICodeLensProvider<T> {
 	 *         lack of a result can be signaled by returning `undefined`,
 	 *         `null`, or an empty array.
 	 */
-	ICodeLens[] provideCodeLenses(T document);
-	
+	ICodeLens[] provideCodeLenses(ITextViewer textViewer);
+
 	/**
-	 * This function will be called for each visible code lens, usually when scrolling and after
-	 * calls to [compute](#CodeLensProvider.provideCodeLenses)-lenses.
+	 * This function will be called for each visible code lens, usually when
+	 * scrolling and after calls to
+	 * [compute](#CodeLensProvider.provideCodeLenses)-lenses.
 	 *
-	 * @param codeLens code lens that must be resolved.
-	 * @param token A cancellation token.
+	 * @param codeLens
+	 *            code lens that must be resolved.
+	 * @param token
+	 *            A cancellation token.
 	 * @return The given, resolved code lens or thenable that resolves to such.
 	 */
-	ICodeLens[] resolveCodeLens(ICodeLens codeLens);
+	ICodeLens resolveCodeLens(ITextViewer textViewer, ICodeLens codeLens);
 }
