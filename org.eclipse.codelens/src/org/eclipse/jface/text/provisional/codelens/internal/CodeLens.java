@@ -1,10 +1,10 @@
-package org.eclipse.text.viewzone.internal.codelens;
+package org.eclipse.jface.text.provisional.codelens.internal;
 
 import java.util.List;
 
-import org.eclipse.text.viewzone.ViewZoneChangeAccessor;
-import org.eclipse.text.viewzone.codelens.ICodeLens;
-import org.eclipse.text.viewzone.codelens.Range;
+import org.eclipse.jface.text.provisional.codelens.ICodeLens;
+import org.eclipse.jface.text.provisional.codelens.Range;
+import org.eclipse.jface.text.provisional.viewzones.ViewZoneChangeAccessor;
 
 public class CodeLens {
 

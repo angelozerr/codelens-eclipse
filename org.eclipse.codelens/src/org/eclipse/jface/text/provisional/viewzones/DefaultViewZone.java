@@ -1,4 +1,4 @@
-package org.eclipse.text.viewzone;
+package org.eclipse.jface.text.provisional.viewzones;
 
 public class DefaultViewZone extends ViewZone {
 

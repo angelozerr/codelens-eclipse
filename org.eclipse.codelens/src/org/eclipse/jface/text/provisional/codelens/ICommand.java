@@ -1,4 +1,4 @@
-package org.eclipse.text.viewzone.codelens;
+package org.eclipse.jface.text.provisional.codelens;
 
 /**
  * Represents a reference to a command. Provides a title which will be used to

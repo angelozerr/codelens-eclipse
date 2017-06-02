@@ -1,14 +1,12 @@
-package org.eclipse.text.viewzone;
+package org.eclipse.jface.text.provisional.viewzones;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
+import org.eclipse.jface.text.provisional.viewzones.internal.StyledTextRendererHelper;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
-import org.eclipse.text.viewzone.internal.StyledTextRendererHelper;
 
 public class ViewZoneChangeAccessor implements IViewZoneChangeAccessor {
 
@@ -29,7 +27,6 @@ public class ViewZoneChangeAccessor implements IViewZoneChangeAccessor {
 		int line = zone.getAfterLineNumber();
 		if (line == 0) {
 			styledText.setTopMargin(zone.getHeightInPx());
-			StyledTextRendererHelper.updateSpacing(getStyledText());
 		} else {
 			line--;
 			int start = getStyledText().getOffsetAtLine(line);
@@ -89,7 +86,7 @@ public class ViewZoneChangeAccessor implements IViewZoneChangeAccessor {
 						offset += newCharCount - replaceCharCount;
 
 					// int lastLine = viewZone.getAfterLineNumber();
-					viewZone.setOffsetAtLine(offset);
+					viewZone.setOffsetAtLine(offset);					
 					// int newLine = viewZone.getAfterLineNumber();
 					// if (lastLine == 0 && newLine != lastLine) {
 					// getText().setTopMargin(getText().getTopMargin() -

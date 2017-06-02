@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.provisional.codelens.Command;
+import org.eclipse.jface.text.provisional.codelens.ICodeLens;
+import org.eclipse.jface.text.provisional.codelens.ICodeLensProvider;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.text.viewzone.codelens.Command;
-import org.eclipse.text.viewzone.codelens.ICodeLens;
-import org.eclipse.text.viewzone.codelens.ICodeLensProvider;
 
 public class ClassReferencesCodeLensProvider implements ICodeLensProvider {
 

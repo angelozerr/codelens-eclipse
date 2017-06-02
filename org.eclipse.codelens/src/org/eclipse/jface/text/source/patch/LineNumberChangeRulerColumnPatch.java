@@ -1,4 +1,4 @@
-package org.eclipse.text.viewzone.codelens;
+package org.eclipse.jface.text.source.patch;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -51,7 +51,6 @@ public class LineNumberChangeRulerColumnPatch {
 
 		@Override
 		public Object invoke(Object obj, Method thisMethod, Method proceed, Object[] args) throws Throwable {
-			System.err.println(thisMethod.getName());
 			if ("createControl".equals(thisMethod.getName())) {
 				CompositeRuler parentRuler = (CompositeRuler) args[0];
 				this.fCachedTextViewer = parentRuler.getTextViewer();
@@ -116,9 +115,11 @@ public class LineNumberChangeRulerColumnPatch {
 					continue;
 
 				final int offsetAtLine = fCachedTextWidget.getOffsetAtLine(widgetLine);
+				// START PATCH
 				// int lineHeight=
 				// fCachedTextWidget.getLineHeight(offsetAtLine);
 				int lineHeight = JFaceTextUtil.computeLineHeight(fCachedTextWidget, widgetLine, widgetLine + 1, 1);
+				// END PATCH
 				paintLine(line, y, lineHeight, gc, display, l);
 
 				// increment y position

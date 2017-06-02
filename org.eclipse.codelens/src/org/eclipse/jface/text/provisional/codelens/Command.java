@@ -1,4 +1,4 @@
-package org.eclipse.text.viewzone.codelens;
+package org.eclipse.jface.text.provisional.codelens;
 
 public class Command implements ICommand {
 

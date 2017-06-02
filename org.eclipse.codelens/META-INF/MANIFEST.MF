@@ -30,5 +30,6 @@ Import-Package: javassist,
  org.eclipse.swt.graphics,
  org.eclipse.swt.widgets
 Bundle-ClassPath: .
-Export-Package: org.eclipse.text.viewzone,
- org.eclipse.text.viewzone.codelens
+Export-Package: org.eclipse.jface.text.provisional.codelens,
+ org.eclipse.jface.text.provisional.viewzones,
+ org.eclipse.jface.text.source.patch

@@ -1,4 +1,4 @@
-package org.eclipse.text.viewzone.codelens;
+package org.eclipse.jface.text.provisional.codelens;
 
 public class Range {
 
@@ -7,8 +7,15 @@ public class Range {
 	 */
 	public final int startLineNumber;
 
-	public Range(int startLineNumber) {
+	/**
+	 * Column on which the range starts in line `startLineNumber` (starts at 1).
+	 */
+	public final int startColumn;
+
+	
+	public Range(int startLineNumber, int startColumn) {
 		this.startLineNumber = startLineNumber;
+		this.startColumn = startColumn;
 	}
 	/**
 	 * Column on which the range starts in line `startLineNumber` (starts at 1).

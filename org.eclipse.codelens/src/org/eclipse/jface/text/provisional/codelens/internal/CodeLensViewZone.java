@@ -1,8 +1,6 @@
-package org.eclipse.text.viewzone.internal.codelens;
+package org.eclipse.jface.text.provisional.codelens.internal;
 
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.text.viewzone.ViewZone;
-import org.eclipse.text.viewzone.internal.StyledTextRendererHelper;
+import org.eclipse.jface.text.provisional.viewzones.ViewZone;
 
 public class CodeLensViewZone extends ViewZone {
 

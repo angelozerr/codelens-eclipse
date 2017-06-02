@@ -1,6 +1,9 @@
 package org.eclipse.codelens.samples;
 
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.text.provisional.viewzones.DefaultViewZone;
+import org.eclipse.jface.text.provisional.viewzones.IViewZoneChangeAccessor;
+import org.eclipse.jface.text.provisional.viewzones.ViewZoneChangeAccessor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -13,9 +16,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.text.viewzone.DefaultViewZone;
-import org.eclipse.text.viewzone.IViewZoneChangeAccessor;
-import org.eclipse.text.viewzone.ViewZoneChangeAccessor;
 
 public class ViewZoneDemo {
 

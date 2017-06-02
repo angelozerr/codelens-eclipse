@@ -3,6 +3,8 @@ package org.eclipse.codelens.samples;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.TextViewer;
+import org.eclipse.jface.text.provisional.codelens.CodeLensContribution;
+import org.eclipse.jface.text.provisional.codelens.CodeLensProviderRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.layout.FillLayout;
@@ -11,12 +13,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.text.viewzone.codelens.CodeLensContribution;
-import org.eclipse.text.viewzone.codelens.CodeLensProviderRegistry;
 
 public class CodeLensDemo {
 
-	private static final String CONTENT_TYPE_ID = "ts";
+	private static final String CODE_LENS_TARGET = "ts";
 
 	public static void main(String[] args) throws Exception {
 		// create the widget's shell
@@ -34,11 +34,10 @@ public class CodeLensDemo {
 		widget.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		CodeLensProviderRegistry registry = CodeLensProviderRegistry.getInstance();
-		registry.register(CONTENT_TYPE_ID, new ClassReferencesCodeLensProvider());
+		registry.register(CODE_LENS_TARGET, new ClassReferencesCodeLensProvider());
 
-		new CodeLensContribution(textViewer, CONTENT_TYPE_ID);
-		
-		//ViewZoneChangeAccessor viewZones = new ViewZoneChangeAccessor(widget);
+		CodeLensContribution contribution = new CodeLensContribution(textViewer);
+		contribution.addTarget(CODE_LENS_TARGET);
 
 		shell.open();
 		while (!shell.isDisposed())

@@ -1,4 +1,4 @@
-package org.eclipse.text.viewzone.codelens;
+package org.eclipse.jface.text.provisional.codelens;
 
 /**
  * A code lens represents a command that should be shown along with source text,

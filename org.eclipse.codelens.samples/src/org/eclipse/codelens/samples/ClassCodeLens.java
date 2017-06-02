@@ -1,6 +1,6 @@
 package org.eclipse.codelens.samples;
 
-import org.eclipse.text.viewzone.codelens.CodeLens;
+import org.eclipse.jface.text.provisional.codelens.CodeLens;
 
 public class ClassCodeLens extends CodeLens {
 

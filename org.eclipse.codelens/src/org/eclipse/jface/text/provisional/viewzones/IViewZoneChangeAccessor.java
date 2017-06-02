@@ -1,4 +1,4 @@
-package org.eclipse.text.viewzone;
+package org.eclipse.jface.text.provisional.viewzones;
 
 /**
  * An accessor that allows for zones to be added or removed.

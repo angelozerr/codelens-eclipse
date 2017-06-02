@@ -1,4 +1,4 @@
-package org.eclipse.text.viewzone.codelens;
+package org.eclipse.jface.text.provisional.codelens;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,30 +8,32 @@ import java.util.List;
 import org.eclipse.jface.text.ITextListener;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.TextEvent;
-import org.eclipse.text.viewzone.ViewZoneChangeAccessor;
-import org.eclipse.text.viewzone.internal.codelens.CodeLens;
-import org.eclipse.text.viewzone.internal.codelens.CodeLensData;
-import org.eclipse.text.viewzone.internal.codelens.CodeLensHelper;
+import org.eclipse.jface.text.provisional.codelens.internal.CodeLens;
+import org.eclipse.jface.text.provisional.codelens.internal.CodeLensData;
+import org.eclipse.jface.text.provisional.codelens.internal.CodeLensHelper;
+import org.eclipse.jface.text.provisional.viewzones.ViewZoneChangeAccessor;
 
 // /vscode/src/vs/editor/contrib/codelens/common/codelens.ts
 public class CodeLensContribution {
 
 	private final ITextViewer textViewer;
-	private final String contentType;
+	private final List<String> targets;
 	private ITextListener internalListener = new ITextListener() {
 
 		@Override
 		public void textChanged(TextEvent event) {
-			onModelChange();
+			if (event.getDocumentEvent() != null) {
+				onModelChange();
+			}
 		}
 	};
 
 	private ViewZoneChangeAccessor accessor;
 	private List<CodeLens> _lenses;
 
-	public CodeLensContribution(ITextViewer textViewer, String contentType) {
+	public CodeLensContribution(ITextViewer textViewer) {
 		this.textViewer = textViewer;
-		this.contentType = contentType;
+		this.targets = new ArrayList<>();
 		textViewer.addTextListener(internalListener);
 		try {
 			this.accessor = new ViewZoneChangeAccessor(textViewer.getTextWidget());
@@ -44,18 +46,20 @@ public class CodeLensContribution {
 	}
 
 	private void onModelChange() {
-		Collection<CodeLensData> symbols = getCodeLensData(textViewer, contentType);
+		Collection<CodeLensData> symbols = getCodeLensData(textViewer, targets);
 		renderCodeLensSymbols(symbols);
 	}
 
-	private static Collection<CodeLensData> getCodeLensData(ITextViewer textViewer, String contentType) {
+	private static Collection<CodeLensData> getCodeLensData(ITextViewer textViewer, List<String> targets) {
 		Collection<CodeLensData> symbols = new ArrayList<>();
-		Collection<ICodeLensProvider> providers = CodeLensProviderRegistry.getInstance().all(contentType);
-		if (providers != null) {
-			for (ICodeLensProvider provider : providers) {
-				ICodeLens[] lenses = provider.provideCodeLenses(textViewer);
-				for (int i = 0; i < lenses.length; i++) {
-					symbols.add(new CodeLensData(lenses[i], provider));
+		for (String target : targets) {
+			Collection<ICodeLensProvider> providers = CodeLensProviderRegistry.getInstance().all(target);
+			if (providers != null) {
+				for (ICodeLensProvider provider : providers) {
+					ICodeLens[] lenses = provider.provideCodeLenses(textViewer);
+					for (int i = 0; i < lenses.length; i++) {
+						symbols.add(new CodeLensData(lenses[i], provider));
+					}
 				}
 			}
 		}
@@ -165,6 +169,13 @@ public class CodeLensContribution {
 		}
 	}
 
+	public void addTarget(String target) {
+		targets.add(target);
+	}
+
+	public void removeTarget(String target) {
+		targets.remove(target);
+	}
 	/*
 	 * private Collection<CompletableFuture<CodeLensData>>
 	 * getCodeLensData(ITextViewer textViewer) {
@@ -192,4 +203,5 @@ public class CodeLensContribution {
 	 * 
 	 * }
 	 */
+
 }

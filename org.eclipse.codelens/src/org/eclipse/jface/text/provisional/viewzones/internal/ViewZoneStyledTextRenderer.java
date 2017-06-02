@@ -1,16 +1,13 @@
-package org.eclipse.text.viewzone.internal;
+package org.eclipse.jface.text.provisional.viewzones.internal;
 
 import java.lang.reflect.Method;
 
-import org.eclipse.swt.SWT;
+import org.eclipse.jface.text.provisional.viewzones.IViewZone;
+import org.eclipse.jface.text.provisional.viewzones.ViewZoneChangeAccessor;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
-import org.eclipse.text.viewzone.IViewZone;
-import org.eclipse.text.viewzone.ViewZoneChangeAccessor;
 
 public class ViewZoneStyledTextRenderer extends StyledTextRendererEmulator {
 

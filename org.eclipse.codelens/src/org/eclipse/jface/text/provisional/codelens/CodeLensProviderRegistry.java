@@ -1,4 +1,4 @@
-package org.eclipse.text.viewzone.codelens;
+package org.eclipse.jface.text.provisional.codelens;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,17 +19,17 @@ public class CodeLensProviderRegistry {
 		this.providersMap = new HashMap<>();
 	}
 
-	public void register(String contentTypeId, ICodeLensProvider provider) {
-		Collection<ICodeLensProvider> providers = providersMap.get(contentTypeId);
+	public void register(String target, ICodeLensProvider provider) {
+		Collection<ICodeLensProvider> providers = providersMap.get(target);
 		if (providers == null) {
 			providers = new ArrayList<>();
-			providersMap.put(contentTypeId, providers);
+			providersMap.put(target, providers);
 		}
 		providers.add(provider);
 	}
 
-	public Collection<ICodeLensProvider> all(String contentTypeId) {
-		return providersMap.get(contentTypeId);
+	public Collection<ICodeLensProvider> all(String target) {
+		return providersMap.get(target);
 	}
 
 }

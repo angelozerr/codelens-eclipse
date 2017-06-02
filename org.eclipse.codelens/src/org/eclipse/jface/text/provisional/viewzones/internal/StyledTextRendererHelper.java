@@ -1,14 +1,14 @@
-package org.eclipse.text.viewzone.internal;
+package org.eclipse.jface.text.provisional.viewzones.internal;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.eclipse.jface.text.provisional.viewzones.ViewZoneChangeAccessor;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.StyledTextContent;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.text.viewzone.ViewZoneChangeAccessor;
 
 import javassist.util.proxy.ProxyFactory;
 
@@ -94,11 +94,11 @@ public class StyledTextRendererHelper {
 			m1.setAccessible(true);
 			m1.invoke(text);
 
-			// text.resetCache(0, text.getContent().getLineCount());
-			// Method m2 = text.getClass().getDeclaredMethod("resetCache",
-			// new Class[] { int.class, int.class });
-			// m2.setAccessible(true);
-			// m2.invoke(text, 0, text.getContent().getLineCount());
+//			 text.resetCache(0, text.getContent().getLineCount());
+//			 Method m2 = text.getClass().getDeclaredMethod("resetCache",
+//			 new Class[] { int.class, int.class });
+//			 m2.setAccessible(true);
+//			 m2.invoke(text, 0, text.getContent().getLineCount());
 			//
 			// // text.setCaretLocation();
 			// Method m3 =
@@ -106,7 +106,7 @@ public class StyledTextRendererHelper {
 			// m3.setAccessible(true);
 			// m3.invoke(text);
 
-			// text.redraw();
+			//text.redraw();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

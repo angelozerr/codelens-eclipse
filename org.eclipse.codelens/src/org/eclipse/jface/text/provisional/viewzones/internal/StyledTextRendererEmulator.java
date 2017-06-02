@@ -1,4 +1,4 @@
-package org.eclipse.text.viewzone.internal;
+package org.eclipse.jface.text.provisional.viewzones.internal;
 
 import java.lang.reflect.Method;
 

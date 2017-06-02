@@ -1,11 +1,11 @@
-package org.eclipse.text.viewzone.internal.codelens;
+package org.eclipse.jface.text.provisional.codelens.internal;
 
+import org.eclipse.jface.text.provisional.viewzones.IViewZoneRenderer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.text.viewzone.IViewZoneRenderer;
 
 public class CodeLensViewZoneRenderer implements IViewZoneRenderer<CodeLensViewZone> {
 

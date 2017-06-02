@@ -1,4 +1,4 @@
-package org.eclipse.text.viewzone;
+package org.eclipse.jface.text.provisional.viewzones;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;

@@ -1,4 +1,4 @@
-package org.eclipse.text.viewzone.codelens;
+package org.eclipse.jface.text.provisional.codelens;
 
 public class CodeLens implements ICodeLens {
 
@@ -6,7 +6,11 @@ public class CodeLens implements ICodeLens {
 	private ICommand command;
 
 	public CodeLens(int startLineNumber) {
-		this.range = new Range(startLineNumber);
+		this(new Range(startLineNumber, 1));
+	}
+	
+	public CodeLens(Range range) {
+		this.range = range;
 	}
 
 	@Override
