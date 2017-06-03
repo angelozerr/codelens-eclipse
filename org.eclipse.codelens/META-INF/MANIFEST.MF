@@ -32,4 +32,6 @@ Import-Package: javassist,
 Bundle-ClassPath: .
 Export-Package: org.eclipse.jface.text.provisional.codelens,
  org.eclipse.jface.text.provisional.viewzones,
- org.eclipse.jface.text.source.patch
+ org.eclipse.jface.text.source.patch,
+ org.eclipse.swt.custom.patch,
+ org.eclipse.swt.custom.provisional

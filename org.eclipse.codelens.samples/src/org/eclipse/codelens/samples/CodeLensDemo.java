@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class CodeLensDemo {
 
-	private static final String CODE_LENS_TARGET = "ts";
+	private static final String CONTENT_TYPE_ID = "ts";
 
 	public static void main(String[] args) throws Exception {
 		// create the widget's shell
@@ -29,15 +29,14 @@ public class CodeLensDemo {
 		parent.setLayout(new GridLayout(2, false));
 
 		ITextViewer textViewer = new TextViewer(parent, SWT.V_SCROLL | SWT.BORDER);
-		textViewer.setDocument(new Document(""));
-		StyledText widget = textViewer.getTextWidget();
-		widget.setLayoutData(new GridData(GridData.FILL_BOTH));
+		textViewer.setDocument(new Document("class A\nnew A\nnew A\n\nclass B\nnew B"));
+		StyledText styledText = textViewer.getTextWidget();
+		styledText.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		CodeLensProviderRegistry registry = CodeLensProviderRegistry.getInstance();
-		registry.register(CODE_LENS_TARGET, new ClassReferencesCodeLensProvider());
+		registry.register(CONTENT_TYPE_ID, new ClassReferencesCodeLensProvider());
 
-		CodeLensContribution contribution = new CodeLensContribution(textViewer);
-		contribution.addTarget(CODE_LENS_TARGET);
+		new CodeLensContribution(textViewer).addTarget(CONTENT_TYPE_ID).start();
 
 		shell.open();
 		while (!shell.isDisposed())

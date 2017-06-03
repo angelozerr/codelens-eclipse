@@ -36,13 +36,15 @@ public class CodeLensContribution {
 		this.targets = new ArrayList<>();
 		textViewer.addTextListener(internalListener);
 		try {
-			this.accessor = new ViewZoneChangeAccessor(textViewer.getTextWidget());
+			this.accessor = new ViewZoneChangeAccessor(textViewer);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		this._lenses = new ArrayList<>();
-		this.onModelChange();
+	}
+	
+	public void start() {
+		onModelChange();
 	}
 
 	private void onModelChange() {
@@ -97,7 +99,7 @@ public class CodeLensContribution {
 
 			if (codeLensLineNumber < symbolsLineNumber) {
 				this._lenses.get(codeLensIndex).dispose(helper, accessor);
-				this._lenses = this._lenses.subList(codeLensIndex, 1);// .splice(codeLensIndex,
+				this._lenses.remove(codeLensIndex);// .splice(codeLensIndex,
 																		// 1);
 			} else if (codeLensLineNumber == symbolsLineNumber) {
 				this._lenses.get(codeLensIndex).updateCodeLensSymbols(groups.get(groupsIndex), helper);
@@ -169,13 +171,16 @@ public class CodeLensContribution {
 		}
 	}
 
-	public void addTarget(String target) {
+	public CodeLensContribution addTarget(String target) {
 		targets.add(target);
+		return this;
 	}
 
-	public void removeTarget(String target) {
+	public CodeLensContribution removeTarget(String target) {
 		targets.remove(target);
+		return this;
 	}
+
 	/*
 	 * private Collection<CompletableFuture<CodeLensData>>
 	 * getCodeLensData(ITextViewer textViewer) {

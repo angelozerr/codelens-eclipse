@@ -1,6 +1,5 @@
 package org.eclipse.jface.text.provisional.viewzones;
 
-import org.eclipse.jface.text.provisional.viewzones.internal.StyledTextRendererHelper;
 import org.eclipse.swt.custom.StyledText;
 
 public class ViewZone implements IViewZone {
@@ -8,7 +7,6 @@ public class ViewZone implements IViewZone {
 	private StyledText styledText;
 	private int offsetAtLine;
 	private int afterLineNumber;
-	private int lastAfterLineNumber;
 	private int height;
 	
 	private final IViewZoneRenderer<?> renderer;
@@ -42,7 +40,6 @@ public class ViewZone implements IViewZone {
 	}
 
 	public void setOffsetAtLine(int offsetAtLine) {
-		lastAfterLineNumber = this.afterLineNumber;
 		this.afterLineNumber = -1;
 		this.offsetAtLine = offsetAtLine;
 	}

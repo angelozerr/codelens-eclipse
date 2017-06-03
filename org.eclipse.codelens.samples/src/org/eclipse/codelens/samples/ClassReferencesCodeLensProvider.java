@@ -23,10 +23,10 @@ public class ClassReferencesCodeLensProvider implements ICodeLensProvider {
 				String className = line.substring(index + "class ".length(), line.length());
 				index = className.indexOf(" ");
 				if (index != -1) {
-					className = className.substring(index, className.length());
+					className = className.substring(0, index);
 				}
 				if (className.length() > 0) {
-					lenses.add(new ClassCodeLens(className, i));
+					lenses.add(new ClassCodeLens(className, i + 1));
 				}
 			}
 		}

@@ -13,23 +13,21 @@ public class CodeLens {
 
 	public CodeLens(List<CodeLensData> data, CodeLensHelper helper, ViewZoneChangeAccessor accessor) {
 		Range range = data.get(0).getSymbol().getRange();
-		zone = new CodeLensViewZone(range.startLineNumber, 20);
+		zone = new CodeLensViewZone(range.startLineNumber - 1, 20);
 		accessor.addZone(zone);
 		_data = data;
 	}
 
 	public void dispose(CodeLensHelper helper, ViewZoneChangeAccessor accessor) {
-		// TODO Auto-generated method stub
-
+		accessor.removeZone(zone);
 	}
 
 	public int getLineNumber() {
 		return zone.getAfterLineNumber();
 	}
 
-	public void updateCodeLensSymbols(List<CodeLensData> list, CodeLensHelper helper) {
-		// TODO Auto-generated method stub
-
+	public void updateCodeLensSymbols(List<CodeLensData> data, CodeLensHelper helper) {
+		this._data = data;
 	}
 
 	public List<CodeLensData> computeIfNecessary(Object object) {
