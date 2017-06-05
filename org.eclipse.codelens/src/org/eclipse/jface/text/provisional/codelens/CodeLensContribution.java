@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jface.text.ITextListener;
 import org.eclipse.jface.text.ITextViewer;
@@ -12,6 +13,7 @@ import org.eclipse.jface.text.provisional.codelens.internal.CodeLens;
 import org.eclipse.jface.text.provisional.codelens.internal.CodeLensData;
 import org.eclipse.jface.text.provisional.codelens.internal.CodeLensHelper;
 import org.eclipse.jface.text.provisional.viewzones.ViewZoneChangeAccessor;
+import org.eclipse.swt.widgets.Display;
 
 // /vscode/src/vs/editor/contrib/codelens/common/codelens.ts
 public class CodeLensContribution {
@@ -30,6 +32,7 @@ public class CodeLensContribution {
 
 	private ViewZoneChangeAccessor accessor;
 	private List<CodeLens> _lenses;
+	private CompletableFuture<Collection<CodeLensData>> symbols;
 
 	public CodeLensContribution(ITextViewer textViewer) {
 		this.textViewer = textViewer;
@@ -42,30 +45,40 @@ public class CodeLensContribution {
 		}
 		this._lenses = new ArrayList<>();
 	}
-	
+
 	public void start() {
 		onModelChange();
 	}
 
 	private void onModelChange() {
-		Collection<CodeLensData> symbols = getCodeLensData(textViewer, targets);
-		renderCodeLensSymbols(symbols);
+		if (symbols != null) {
+			symbols.cancel(true);
+		}
+		symbols = getCodeLensData(textViewer, targets);
+		//symbols.exceptionally(ex -> ex.printStackTrace());
+		symbols.thenAccept(s -> {
+			renderCodeLensSymbols(s);
+		});
+
 	}
 
-	private static Collection<CodeLensData> getCodeLensData(ITextViewer textViewer, List<String> targets) {
-		Collection<CodeLensData> symbols = new ArrayList<>();
-		for (String target : targets) {
-			Collection<ICodeLensProvider> providers = CodeLensProviderRegistry.getInstance().all(target);
-			if (providers != null) {
-				for (ICodeLensProvider provider : providers) {
-					ICodeLens[] lenses = provider.provideCodeLenses(textViewer);
-					for (int i = 0; i < lenses.length; i++) {
-						symbols.add(new CodeLensData(lenses[i], provider));
+	private static CompletableFuture<Collection<CodeLensData>> getCodeLensData(ITextViewer textViewer,
+			List<String> targets) {
+		return CompletableFuture.supplyAsync(() -> {
+			Collection<CodeLensData> symbols = new ArrayList<>();
+			for (String target : targets) {
+				Collection<ICodeLensProvider> providers = CodeLensProviderRegistry.getInstance().all(target);
+				if (providers != null) {
+					for (ICodeLensProvider provider : providers) {
+						ICodeLens[] lenses = provider.provideCodeLenses(textViewer);
+						for (int i = 0; i < lenses.length; i++) {
+							symbols.add(new CodeLensData(lenses[i], provider));
+						}
 					}
 				}
 			}
-		}
-		return symbols;
+			return symbols;
+		});		
 	}
 
 	private void renderCodeLensSymbols(Collection<CodeLensData> symbols) {
@@ -100,7 +113,7 @@ public class CodeLensContribution {
 			if (codeLensLineNumber < symbolsLineNumber) {
 				this._lenses.get(codeLensIndex).dispose(helper, accessor);
 				this._lenses.remove(codeLensIndex);// .splice(codeLensIndex,
-																		// 1);
+													// 1);
 			} else if (codeLensLineNumber == symbolsLineNumber) {
 				this._lenses.get(codeLensIndex).updateCodeLensSymbols(groups.get(groupsIndex), helper);
 				groupsIndex++;
@@ -169,6 +182,11 @@ public class CodeLensContribution {
 			lenses.get(i).updateCommands(resolvedSymbols);
 			i++;
 		}
+		
+
+		Display.getDefault().syncExec(() -> {
+			textViewer.getTextWidget().redraw();				
+		});	
 	}
 
 	public CodeLensContribution addTarget(String target) {

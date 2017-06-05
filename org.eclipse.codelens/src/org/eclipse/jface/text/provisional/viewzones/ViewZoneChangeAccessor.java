@@ -51,31 +51,31 @@ public class ViewZoneChangeAccessor implements IViewZoneChangeAccessor, ILineSpa
 		viewZones.add(zone);
 		StyledText styledText = textViewer.getTextWidget();
 		zone.setStyledText(styledText);
-		int line = zone.getAfterLineNumber();
-		if (line == 0) {
-			styledText.setTopMargin(originalTopMargin + zone.getHeightInPx());
-			// StyledTextRendererHelper.updateSpacing(styledText);
-		} else {
-			line--;
-			int start = styledText.getOffsetAtLine(line);
-			int length = styledText.getText().length() - start;
-			styledText.redrawRange(start, length, true);
-		}
+//		int line = zone.getAfterLineNumber();
+//		if (line == 0) {
+//			styledText.setTopMargin(originalTopMargin + zone.getHeightInPx());
+//			// StyledTextRendererHelper.updateSpacing(styledText);
+//		} else {
+//			line--;
+//			int start = styledText.getOffsetAtLine(line);
+//			int length = styledText.getText().length() - start;
+//			styledText.redrawRange(start, length, true);
+//		}
 	}
 
 	@Override
 	public void removeZone(IViewZone zone) {
 		viewZones.remove(zone);
 		StyledText styledText = textViewer.getTextWidget();
-		int line = zone.getAfterLineNumber();
-		if (line == 0) {
-			styledText.setTopMargin(originalTopMargin);
-		} else {
-			line--;
-			int start = styledText.getOffsetAtLine(line);
-			int length = styledText.getText().length() - start;
-			styledText.redrawRange(start, length, true);
-		}
+//		int line = zone.getAfterLineNumber();
+//		if (line == 0) {
+//			styledText.setTopMargin(originalTopMargin);
+//		} else {
+//			line--;
+//			int start = styledText.getOffsetAtLine(line);
+//			int length = styledText.getText().length() - start;
+//			styledText.redrawRange(start, length, true);
+//		}
 	}
 
 	// @Override

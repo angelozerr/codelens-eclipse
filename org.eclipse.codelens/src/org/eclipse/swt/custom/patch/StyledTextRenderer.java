@@ -12,7 +12,7 @@ public class StyledTextRenderer extends StyledTextRendererEmulator {
 	private ILineSpacingProvider lineSpacingProvider;
 
 	private final StyledText styledText;
-	
+
 	public StyledTextRenderer(StyledText styledText) {
 		this.styledText = styledText;
 	}
@@ -33,11 +33,16 @@ public class StyledTextRenderer extends StyledTextRendererEmulator {
 			}
 		}
 		if (layout.getSpacing() != newSpacing) {
-	
+			// Update spacing
+			layout.setSpacing(newSpacing);
+
+			// invalidate text layout.
+			// call styledText.setVariableLineHeight();
 			Method m1 = styledText.getClass().getDeclaredMethod("setVariableLineHeight");
 			m1.setAccessible(true);
 			m1.invoke(styledText);
-			
+
+			// recreate text layout.
 			layout = super.getTextLayout(lineIndex, orientation, width, newSpacing, obj, proceed, args);
 		}
 		return layout;

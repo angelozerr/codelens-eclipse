@@ -12,7 +12,7 @@ public class CodeLensViewZone extends ViewZone {
 
 	public void setText(String text) {
 		this.text = text;
-		redraw();
+		//redraw();
 	}
 
 	public String getText() {
