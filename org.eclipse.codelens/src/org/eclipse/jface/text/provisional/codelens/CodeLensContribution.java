@@ -199,6 +199,10 @@ public class CodeLensContribution {
 		return this;
 	}
 
+	public void dispose() {
+		
+	}
+
 	/*
 	 * private Collection<CompletableFuture<CodeLensData>>
 	 * getCodeLensData(ITextViewer textViewer) {
