@@ -1,20 +1,20 @@
 package org.eclipse.jface.text.provisional.viewzones;
 
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.MouseEvent;
 
-public class ViewZone implements IViewZone {
+public abstract class ViewZone implements IViewZone {
 
 	private StyledText styledText;
 	private int offsetAtLine;
 	private int afterLineNumber;
 	private int height;
-	
-	private final IViewZoneRenderer<?> renderer;
 
-	public ViewZone(int afterLineNumber, int height, IViewZoneRenderer<?> renderer) {
+	private boolean disposed;
+
+	public ViewZone(int afterLineNumber, int height) {
 		this.height = height;
 		setAfterLineNumber(afterLineNumber);
-		this.renderer = renderer;
 	}
 
 	public void setStyledText(StyledText styledText) {
@@ -28,14 +28,21 @@ public class ViewZone implements IViewZone {
 
 	@Override
 	public int getAfterLineNumber() {
-		if (afterLineNumber == -1) {
-			afterLineNumber = styledText.getLineAtOffset(offsetAtLine);
+		if (offsetAtLine != -1) {
+			try {
+				afterLineNumber = styledText.getLineAtOffset(offsetAtLine);
+			} catch (Exception e) {
+				// e.printStackTrace();
+				return -1;
+			}
 		}
 		return afterLineNumber;
 	}
 
 	public int getOffsetAtLine() {
-		offsetAtLine = styledText.getOffsetAtLine(afterLineNumber);
+		if (offsetAtLine == -1) {
+			offsetAtLine = styledText.getOffsetAtLine(afterLineNumber);
+		}
 		return offsetAtLine;
 	}
 
@@ -50,19 +57,37 @@ public class ViewZone implements IViewZone {
 	}
 
 	@Override
-	public IViewZoneRenderer<?> getRenderer() {
-		return renderer;
+	public void dispose() {
+		this.disposed = true;
+		this.setStyledText(null);
 	}
-	
-	protected void redraw() {
-		int line = getAfterLineNumber();
-		if (line == 0) {
-			styledText.setTopMargin(getHeightInPx());
-		} else {
-			line--;
-			int start = styledText.getOffsetAtLine(line);
-			int length = styledText.getOffsetAtLine(line + 1) - start;
-			styledText.redrawRange(start, length, true);
-		}
+
+	@Override
+	public boolean isDisposed() {
+		return disposed;
+	}
+
+	@Override
+	public void mouseHover(MouseEvent event) {
+		// System.err.println("mouseHover");
+	}
+
+	@Override
+	public void mouseEnter(MouseEvent event) {
+		// System.err.println("mouseEnter");
+	}
+
+	@Override
+	public void mouseExit(MouseEvent event) {
+		// System.err.println("mouseExit");
+	}
+
+	@Override
+	public void onMouseClick(MouseEvent event) {
+
+	}
+
+	public StyledText getStyledText() {
+		return styledText;
 	}
 }

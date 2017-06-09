@@ -3,9 +3,9 @@ package org.eclipse.codelens.samples;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.ITextViewerExtension2;
 import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.text.provisional.viewzones.DefaultViewZone;
+import org.eclipse.jface.text.provisional.viewzones.IViewZone;
 import org.eclipse.jface.text.provisional.viewzones.ViewZoneChangeAccessor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -38,7 +38,7 @@ public class ViewZoneDemo {
 		styledText.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		ViewZoneChangeAccessor viewZones = new ViewZoneChangeAccessor(textViewer);
-		
+
 		Button add = new Button(parent, SWT.NONE);
 		add.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false, 0, 0));
 		add.setText("Add Zone");
@@ -49,7 +49,9 @@ public class ViewZoneDemo {
 						"Zone " + viewZones.getSize(), null);
 				if (dlg.open() == Window.OK) {
 					int line = styledText.getLineAtOffset(styledText.getCaretOffset());
-					viewZones.addZone(new DefaultViewZone(line, 20, dlg.getValue()));
+					IViewZone zone = new DefaultViewZone(line, 20, dlg.getValue());
+					viewZones.addZone(zone);
+					viewZones.layoutZone(zone);
 				}
 			}
 		});

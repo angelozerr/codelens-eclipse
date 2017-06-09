@@ -9,7 +9,7 @@ import org.eclipse.jface.text.provisional.codelens.Command;
 import org.eclipse.jface.text.provisional.codelens.ICodeLens;
 import org.eclipse.jface.text.provisional.codelens.ICodeLensProvider;
 
-public class ClassReferencesCodeLensProvider implements ICodeLensProvider {
+public class ClassImplementationsCodeLensProvider implements ICodeLensProvider {
 
 	@Override
 	public ICodeLens[] provideCodeLenses(ITextViewer textViewer) {
@@ -26,15 +26,28 @@ public class ClassReferencesCodeLensProvider implements ICodeLensProvider {
 		int lineCount = document.getNumberOfLines();
 		for (int i = 0; i < lineCount; i++) {
 			String line = getLineText(document, i, false);
-			int index = line.indexOf("class ");
+			int index = line.indexOf("interface ");
 			if (index != -1) {
-				String className = line.substring(index + "class ".length(), line.length());
+				String className = line.substring(index + "interface ".length(), line.length());
 				index = className.indexOf(" ");
 				if (index != -1) {
 					className = className.substring(0, index);
 				}
 				if (className.length() > 0) {
 					lenses.add(new ClassCodeLens(className, i + 1));
+				}
+			} else {
+				line = getLineText(document, i, false);
+				index = line.indexOf("class ");
+				if (index != -1) {
+					String className = line.substring(index + "class ".length(), line.length());
+					index = className.indexOf(" ");
+					if (index != -1) {
+						className = className.substring(0, index);
+					}
+					if (className.length() > 0) {
+						lenses.add(new ClassCodeLens(className, i + 1));
+					}
 				}
 			}
 		}
@@ -43,23 +56,15 @@ public class ClassReferencesCodeLensProvider implements ICodeLensProvider {
 
 	@Override
 	public ICodeLens resolveCodeLens(ITextViewer textViewer, ICodeLens codeLens) {
-//		synchronized (this) {
-//			try {
-//				this.wait(5000);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
 		IDocument document = textViewer.getDocument();
 		String className = ((ClassCodeLens) codeLens).getClassName();
 		int refCount = 0;
 		int lineCount = document.getNumberOfLines();
 		for (int i = 0; i < lineCount; i++) {
 			String line = getLineText(document, i, false);
-			refCount += line.contains("new " + className) ? 1 : 0;
+			refCount += line.contains("implements " + className) ? 1 : 0;
 		}
-		((ClassCodeLens) codeLens).setCommand(new Command(refCount + " references", ""));
+		((ClassCodeLens) codeLens).setCommand(new Command(refCount + " implementation", ""));
 		return codeLens;
 	}
 
