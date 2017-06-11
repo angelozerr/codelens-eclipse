@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Eclipse CodeLens
+Bundle-Vendor: %providerName
 Bundle-SymbolicName: org.eclipse.codelens;singleton:=true
 Bundle-Version: 1.3.0.qualifier
 Require-Bundle: org.eclipse.core.runtime,
@@ -35,3 +35,5 @@ Export-Package: org.eclipse.jface.text.provisional.codelens,
  org.eclipse.jface.text.source.patch,
  org.eclipse.swt.custom.patch,
  org.eclipse.swt.custom.provisional
+Bundle-Name: %pluginName
+Bundle-ActivationPolicy: lazy
