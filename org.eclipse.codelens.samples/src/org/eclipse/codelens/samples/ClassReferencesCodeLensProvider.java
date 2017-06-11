@@ -13,14 +13,6 @@ public class ClassReferencesCodeLensProvider implements ICodeLensProvider {
 
 	@Override
 	public ICodeLens[] provideCodeLenses(ITextViewer textViewer) {
-//		synchronized (this) {
-//			try {
-//				this.wait(1000);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
 		IDocument document = textViewer.getDocument();
 		List<ICodeLens> lenses = new ArrayList<>();
 		int lineCount = document.getNumberOfLines();
@@ -43,14 +35,6 @@ public class ClassReferencesCodeLensProvider implements ICodeLensProvider {
 
 	@Override
 	public ICodeLens resolveCodeLens(ITextViewer textViewer, ICodeLens codeLens) {
-//		synchronized (this) {
-//			try {
-//				this.wait(5000);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
 		IDocument document = textViewer.getDocument();
 		String className = ((ClassCodeLens) codeLens).getClassName();
 		int refCount = 0;
