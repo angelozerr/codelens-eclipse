@@ -3,8 +3,8 @@ package org.eclipse.codelens.samples;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.TextViewer;
-import org.eclipse.jface.text.provisional.codelens.CodeLensStrategy;
 import org.eclipse.jface.text.provisional.codelens.CodeLensProviderRegistry;
+import org.eclipse.jface.text.provisional.codelens.CodeLensStrategy;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
@@ -32,21 +32,22 @@ public class CodeLensDemo {
 
 		ITextViewer textViewer = new TextViewer(parent, SWT.V_SCROLL | SWT.BORDER);
 		String delim = textViewer.getTextWidget().getLineDelimiter();
-		textViewer.setDocument(new Document(delim + "class A" + delim + "new A" + delim + "new A" + delim + "class B" + delim + "new B" + delim + "interface I" + delim + "class C implements I"));		
+		textViewer.setDocument(new Document(delim + " class A" + delim + "new A" + delim + "new A" + delim + "class B"
+				+ delim + "new B" + delim + "interface I" + delim + "class C implements I"));
 		StyledText styledText = textViewer.getTextWidget();
 		styledText.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		CodeLensProviderRegistry registry = CodeLensProviderRegistry.getInstance();
 		registry.register(CONTENT_TYPE_ID, new ClassReferencesCodeLensProvider());
 		registry.register(CONTENT_TYPE_ID, new ClassImplementationsCodeLensProvider());
-		
-		CodeLensStrategy codelens = new CodeLensStrategy(textViewer, false);		
-		codelens.addTarget(CONTENT_TYPE_ID).start();
-		
+
+		CodeLensStrategy codelens = new CodeLensStrategy(textViewer, false);
+		codelens.addTarget(CONTENT_TYPE_ID).reconcile(null);
+
 		styledText.addModifyListener(new ModifyListener() {
-			
+
 			@Override
-			public void modifyText(ModifyEvent arg0) {
+			public void modifyText(ModifyEvent event) {
 				codelens.reconcile(null);
 			}
 		});

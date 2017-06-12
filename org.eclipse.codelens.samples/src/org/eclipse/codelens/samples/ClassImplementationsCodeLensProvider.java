@@ -13,45 +13,29 @@ public class ClassImplementationsCodeLensProvider implements ICodeLensProvider {
 
 	@Override
 	public ICodeLens[] provideCodeLenses(ITextViewer textViewer) {
-//		synchronized (this) {
-//			try {
-//				this.wait(1000);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
 		IDocument document = textViewer.getDocument();
 		List<ICodeLens> lenses = new ArrayList<>();
 		int lineCount = document.getNumberOfLines();
 		for (int i = 0; i < lineCount; i++) {
-			String line = getLineText(document, i, false);
-			int index = line.indexOf("interface ");
-			if (index != -1) {
-				String className = line.substring(index + "interface ".length(), line.length());
-				index = className.indexOf(" ");
-				if (index != -1) {
-					className = className.substring(0, index);
-				}
-				if (className.length() > 0) {
-					lenses.add(new ClassCodeLens(className, i + 1));
-				}
-			} else {
-				line = getLineText(document, i, false);
-				index = line.indexOf("class ");
-				if (index != -1) {
-					String className = line.substring(index + "class ".length(), line.length());
-					index = className.indexOf(" ");
-					if (index != -1) {
-						className = className.substring(0, index);
-					}
-					if (className.length() > 0) {
-						lenses.add(new ClassCodeLens(className, i + 1));
-					}
-				}
-			}
+			updateCodeLens(i, document, "class ", lenses);
+			updateCodeLens(i, document, "interface ", lenses);
 		}
 		return lenses.toArray(new ICodeLens[0]);
+	}
+
+	private void updateCodeLens(int lineIndex, IDocument document, String token, List<ICodeLens> lenses) {
+		String line = getLineText(document, lineIndex, false);
+		int index = line.indexOf(token);
+		if (index != -1) {
+			String className = line.substring(index + token.length(), line.length());
+			index = className.indexOf(" ");
+			if (index != -1) {
+				className = className.substring(0, index);
+			}
+			if (className.length() > 0) {
+				lenses.add(new ClassCodeLens(className, lineIndex + 1));
+			}
+		}
 	}
 
 	@Override
