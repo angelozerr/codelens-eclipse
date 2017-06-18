@@ -1,16 +1,76 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>fr.opensagres.js</groupId>
-		<artifactId>eclipse</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
-	</parent>
+	<groupId>fr.opensagres.js</groupId>
 	<artifactId>codelens</artifactId>
+	<version>1.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
-		<module>javassist</module>
 		<module>org.eclipse.codelens</module>
 		<module>org.eclipse.codelens.jface.fragment</module>
 		<module>org.eclipse.codelens.swt.fragment</module>
+		<module>org.eclipse.codelens.repository</module>
 	</modules>
+
+	<scm>
+		<connection>scm:git:https://github.com/angelozerr/codelens-eclipse.git</connection>
+		<developerConnection>scm:git:https://github.com/angelozerr/codelens-eclipse.git</developerConnection>
+		<url>https://github.com/angelozerr/codelens-eclipse</url>
+	</scm>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<extensions>true</extensions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>1.0.0</version>
+				<inherited>true</inherited>
+				<configuration>
+					<resolver>p2</resolver>
+					<pomDependencies>consider</pomDependencies>
+					<environments>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>x86_64</arch>
+						</environment>
+					</environments>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>kepler</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/kepler</url>
+		</repository>
+	</repositories>
 </project>
