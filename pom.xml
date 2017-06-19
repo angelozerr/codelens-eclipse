@@ -72,5 +72,10 @@
 			<layout>p2</layout>
 			<url>http://download.eclipse.org/releases/kepler</url>
 		</repository>
+		<repository>
+			<id>orbit</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/tools/orbit/S-builds/S20170306214312/repository</url>
+		</repository>
 	</repositories>
 </project>
