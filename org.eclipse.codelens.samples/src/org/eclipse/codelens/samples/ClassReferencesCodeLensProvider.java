@@ -3,16 +3,19 @@ package org.eclipse.codelens.samples;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.provisional.codelens.Command;
 import org.eclipse.jface.text.provisional.codelens.ICodeLens;
+import org.eclipse.jface.text.provisional.codelens.ICodeLensContext;
 import org.eclipse.jface.text.provisional.codelens.ICodeLensProvider;
 
 public class ClassReferencesCodeLensProvider implements ICodeLensProvider {
 
 	@Override
-	public ICodeLens[] provideCodeLenses(ITextViewer textViewer) {
+	public ICodeLens[] provideCodeLenses(ICodeLensContext context, IProgressMonitor monitor) {
+		ITextViewer textViewer = context.getViewer();
 		IDocument document = textViewer.getDocument();
 		List<ICodeLens> lenses = new ArrayList<>();
 		int lineCount = document.getNumberOfLines();
@@ -34,7 +37,8 @@ public class ClassReferencesCodeLensProvider implements ICodeLensProvider {
 	}
 
 	@Override
-	public ICodeLens resolveCodeLens(ITextViewer textViewer, ICodeLens codeLens) {
+	public ICodeLens resolveCodeLens(ICodeLensContext context, ICodeLens codeLens, IProgressMonitor monitor) {
+		ITextViewer textViewer = context.getViewer();
 		IDocument document = textViewer.getDocument();
 		String className = ((ClassCodeLens) codeLens).getClassName();
 		int refCount = 0;

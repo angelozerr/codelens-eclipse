@@ -10,6 +10,9 @@
 		<module>org.eclipse.codelens.jface.fragment</module>
 		<module>org.eclipse.codelens.swt.fragment</module>
 		<module>org.eclipse.codelens.repository</module>
+    
+        <module>org.eclipse.codelens.editors</module>
+        <module>org.eclipse.codelens.jdt</module>
 	</modules>
 
 	<scm>

@@ -5,6 +5,7 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.text.provisional.codelens.CodeLensProviderRegistry;
 import org.eclipse.jface.text.provisional.codelens.CodeLensStrategy;
+import org.eclipse.jface.text.provisional.codelens.DefaultCodeLensContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
@@ -41,7 +42,7 @@ public class CodeLensDemo {
 		registry.register(CONTENT_TYPE_ID, new ClassReferencesCodeLensProvider());
 		registry.register(CONTENT_TYPE_ID, new ClassImplementationsCodeLensProvider());
 
-		CodeLensStrategy codelens = new CodeLensStrategy(textViewer, false);
+		CodeLensStrategy codelens = new CodeLensStrategy(new DefaultCodeLensContext(textViewer), false);
 		codelens.addTarget(CONTENT_TYPE_ID).reconcile(null);
 
 		styledText.addModifyListener(new ModifyListener() {
