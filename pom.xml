@@ -9,10 +9,10 @@
 		<module>org.eclipse.codelens</module>
 		<module>org.eclipse.codelens.jface.fragment</module>
 		<module>org.eclipse.codelens.swt.fragment</module>
-		<module>org.eclipse.codelens.repository</module>
-
 		<module>org.eclipse.codelens.editors</module>
 		<module>org.eclipse.codelens.jdt</module>
+		<module>org.eclipse.codelens.feature</module>
+		<module>org.eclipse.codelens.repository</module>
 	</modules>
 
 	<scm>
@@ -65,6 +65,19 @@
 						</environment>
 					</environments>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-source-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<id>plugin-source</id>
+						<goals>
+							<goal>plugin-source</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho.extras</groupId>

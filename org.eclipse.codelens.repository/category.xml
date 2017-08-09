@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <bundle id="org.eclipse.codelens" version="1.1.0.qualifier">
+   <feature url="features/org.eclipse.codelens.feature_1.1.0.qualifier.jar" id="org.eclipse.codelens.feature" version="1.1.0.qualifier">
       <category name="codelens"/>
-   </bundle>
-   <bundle id="org.eclipse.codelens.jface.fragment" version="1.1.0.qualifier">
-      <category name="codelens"/>
-   </bundle>
-   <bundle id="org.eclipse.codelens.swt.fragment" version="1.1.0.qualifier">
-      <category name="codelens"/>
-   </bundle>
+   </feature>
    <category-def name="codelens" label="codelens"/>
 </site>
