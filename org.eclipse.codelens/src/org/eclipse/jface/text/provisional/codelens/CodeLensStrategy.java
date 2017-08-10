@@ -76,6 +76,9 @@ public class CodeLensStrategy implements IReconcilingStrategy, IReconcilingStrat
 				List<ICodeLensProvider> providers = CodeLensProviderRegistry.getInstance().all(target);
 				if (providers != null) {
 					for (ICodeLensProvider provider : providers) {
+						if (isCanceled()) {
+							return Collections.emptyList();
+						}
 						ICodeLens[] lenses = provider.provideCodeLenses(context, getProgressMonitor());
 						if (lenses != null) {
 							for (int i = 0; i < lenses.length; i++) {
@@ -109,7 +112,15 @@ public class CodeLensStrategy implements IReconcilingStrategy, IReconcilingStrat
 	}
 
 	private void renderCodeLensSymbols(Collection<CodeLensData> symbols) {
-		IDocument document = this.context.getViewer().getDocument();
+		if (isCanceled()) {
+			return;
+		}
+		ITextViewer textViewer = this.context.getViewer();
+		IDocument document = textViewer != null ? textViewer.getDocument() : null;
+		if (document == null) {
+			// this case comes from when editor is closed before codelens rendered is done.
+			return;
+		}
 		int maxLineNumber = document.getNumberOfLines();
 		List<List<CodeLensData>> groups = new ArrayList<>();
 		List<CodeLensData> lastGroup = null;
@@ -193,6 +204,10 @@ public class CodeLensStrategy implements IReconcilingStrategy, IReconcilingStrat
 	}
 
 	private void _onViewportChanged() {
+		if (isCanceled()) {
+			return;
+		}
+
 		List<List<CodeLensData>> toResolve = new ArrayList<>();
 		List<CodeLens> lenses = new ArrayList<>();
 
@@ -218,7 +233,10 @@ public class CodeLensStrategy implements IReconcilingStrategy, IReconcilingStrat
 		for (List<CodeLensData> request : toResolve) {
 			List<ICodeLens> resolvedSymbols = new ArrayList<ICodeLens>(request.size());
 			for (CodeLensData req : request) {
-				ICodeLens symbol = req.getProvider().resolveCodeLens(context, req.getSymbol(), getProgressMonitor());
+				if (isCanceled()) {
+					return;
+				}
+				ICodeLens symbol = req.getProvider().resolveCodeLens(context, req.getSymbol(), monitor);
 				if (symbol != null) {
 					resolvedSymbols.add(symbol);
 				}
@@ -227,9 +245,17 @@ public class CodeLensStrategy implements IReconcilingStrategy, IReconcilingStrat
 			i++;
 		}
 
+		if (isCanceled()) {
+			return;
+		}
+
 		final Integer top = topMargin;
 		ITextViewer textViewer = context.getViewer();
 		final StyledText styledText = textViewer.getTextWidget();
+		if (styledText == null || styledText.isDisposed() || styledText.getDisplay().isDisposed()) {
+			return;
+		}
+
 		styledText.getDisplay().syncExec(() -> {
 			if (invalidateTextPresentation) {
 				// if (top != null && styledText.getTopMargin() != top) {
@@ -255,6 +281,10 @@ public class CodeLensStrategy implements IReconcilingStrategy, IReconcilingStrat
 				}
 			}
 		});
+	}
+
+	private boolean isCanceled() {
+		return monitor != null && monitor.isCanceled();
 	}
 
 	public CodeLensStrategy addTarget(String target) {

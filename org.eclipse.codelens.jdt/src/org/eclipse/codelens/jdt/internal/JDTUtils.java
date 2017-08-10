@@ -10,7 +10,6 @@ import org.eclipse.jdt.core.IAnnotatable;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.IClassFile;
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMemberValuePair;
@@ -39,9 +38,9 @@ public class JDTUtils {
 	public static final String MISSING_SOURCES_HEADER = " // Failed to get sources. Instead, stub sources have been generated.\n"
 			+ " // Implementation of methods is unavailable.\n";
 	private static final String LF = "\n";
-	
-	public static ICompilationUnit resolveCompilationUnit(ITextEditor textEditor) {
-		return (ICompilationUnit) EditorUtility.getEditorInputJavaElement(textEditor, true);
+
+	public static ITypeRoot resolveCompilationUnit(ITextEditor textEditor) {
+		return EditorUtility.getEditorInputJavaElement(textEditor, true);
 	}
 
 	public static boolean isHiddenGeneratedElement(IJavaElement element) {
@@ -131,20 +130,22 @@ public class JDTUtils {
 		}
 		if (buffer instanceof IDocument) {
 			return (IDocument) buffer;
+		} else if (buffer instanceof org.eclipse.jdt.internal.ui.javaeditor.DocumentAdapter) {
+			IDocument document = ((org.eclipse.jdt.internal.ui.javaeditor.DocumentAdapter) buffer).getDocument();
+			if (document != null) {
+				return document;
+			}
 		}
-		/*
-		 * else if (buffer instanceof org.eclipse.jdt.ls.core.internal.DocumentAdapter)
-		 * { IDocument document = ((org.eclipse.jdt.ls.core.internal.DocumentAdapter)
-		 * buffer).getDocument(); if (document != null) { return document; } }
-		 */
 		return new org.eclipse.jdt.internal.core.DocumentAdapter(buffer);
 	}
 
-	public static IJavaElement findElementAtSelection(ITypeRoot unit, Range range) throws JavaModelException, BadLocationException {
+	public static IJavaElement findElementAtSelection(ITypeRoot unit, Range range)
+			throws JavaModelException, BadLocationException {
 		return findElementAtSelection(unit, range.startLineNumber - 1, range.startColumn - 1);
 	}
-	
-	public static IJavaElement findElementAtSelection(ITypeRoot unit, int line, int column) throws JavaModelException, BadLocationException {
+
+	public static IJavaElement findElementAtSelection(ITypeRoot unit, int line, int column)
+			throws JavaModelException, BadLocationException {
 		IJavaElement[] elements = findElementsAtSelection(unit, line, column);
 		if (elements != null && elements.length == 1) {
 			return elements[0];
@@ -152,11 +153,12 @@ public class JDTUtils {
 		return null;
 	}
 
-	public static IJavaElement[] findElementsAtSelection(ITypeRoot unit, int line, int column) throws JavaModelException, BadLocationException {
+	public static IJavaElement[] findElementsAtSelection(ITypeRoot unit, int line, int column)
+			throws JavaModelException, BadLocationException {
 		if (unit == null) {
 			return null;
 		}
-		int offset = toDocument(unit.getBuffer()).getLineOffset(line ) + column;
+		int offset = toDocument(unit.getBuffer()).getLineOffset(line) + column;
 		if (offset > -1) {
 			return unit.codeSelect(offset, 0);
 		}
@@ -193,13 +195,13 @@ public class JDTUtils {
 						return elements.toArray(new IJavaElement[0]);
 					}
 				} catch (BadLocationException | CoreException e) {
-					//JavaLanguageServerPlugin.logException(e.getMessage(), e);
+					// JavaLanguageServerPlugin.logException(e.getMessage(), e);
 				}
 			}
 		}
 		return null;
 	}
-	
+
 	public static IJavaSearchScope createSearchScope(IJavaProject project) {
 		if (project == null) {
 			return SearchEngine.createWorkspaceScope();
@@ -207,7 +209,7 @@ public class JDTUtils {
 		return SearchEngine.createJavaSearchScope(new IJavaProject[] { project },
 				IJavaSearchScope.SOURCES | IJavaSearchScope.APPLICATION_LIBRARIES | IJavaSearchScope.SYSTEM_LIBRARIES);
 	}
-	
+
 	private static String parse(String contents, int offset) {
 		if (contents == null || offset < 0 || contents.length() < offset
 				|| !isJavaIdentifierOrPeriod(contents.charAt(offset))) {
@@ -226,11 +228,11 @@ public class JDTUtils {
 		}
 		return null;
 	}
-	
+
 	private static boolean isJavaIdentifierOrPeriod(char ch) {
 		return Character.isJavaIdentifierPart(ch) || ch == '.';
 	}
-	
+
 	public static String disassemble(IClassFile classFile) {
 		ClassFileBytesDisassembler disassembler = ToolFactory.createDefaultClassFileBytesDisassembler();
 		String disassembledByteCode = null;
@@ -239,11 +241,11 @@ public class JDTUtils {
 					ClassFileBytesDisassembler.WORKING_COPY);
 			disassembledByteCode = MISSING_SOURCES_HEADER + LF + disassembledByteCode;
 		} catch (Exception e) {
-			//JavaLanguageServerPlugin.logError("Unable to disassemble " + classFile.getHandleIdentifier());
+			// JavaLanguageServerPlugin.logError("Unable to disassemble " +
+			// classFile.getHandleIdentifier());
 			e.printStackTrace();
 		}
 		return disassembledByteCode;
 	}
-
 
 }

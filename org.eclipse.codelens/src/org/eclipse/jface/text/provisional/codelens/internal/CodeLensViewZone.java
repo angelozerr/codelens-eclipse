@@ -2,6 +2,8 @@ package org.eclipse.jface.text.provisional.codelens.internal;
 
 import java.util.List;
 
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.provisional.codelens.ICodeLens;
 import org.eclipse.jface.text.provisional.viewzones.ViewZone;
 import org.eclipse.swt.SWT;
@@ -27,7 +29,7 @@ public class CodeLensViewZone extends ViewZone {
 	@Override
 	public void mouseHover(MouseEvent event) {
 		hover = event;
-		StyledText styledText = getStyledText();
+		StyledText styledText = getTextViewer().getTextWidget();
 		styledText.setCursor(styledText.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 
 	}
@@ -35,14 +37,14 @@ public class CodeLensViewZone extends ViewZone {
 	@Override
 	public void mouseEnter(MouseEvent event) {
 		hover = event;
-		StyledText styledText = getStyledText();
+		StyledText styledText = getTextViewer().getTextWidget();
 		styledText.setCursor(styledText.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 	}
 
 	@Override
 	public void mouseExit(MouseEvent event) {
 		hover = null;
-		StyledText styledText = getStyledText();
+		StyledText styledText = getTextViewer().getTextWidget();
 		styledText.setCursor(null);
 	}
 
@@ -63,7 +65,7 @@ public class CodeLensViewZone extends ViewZone {
 
 	@Override
 	public void draw(int paintX, int paintSpaceLeadingX, int paintY, GC gc) {
-		StyledText styledText = super.getStyledText();
+		StyledText styledText = getTextViewer().getTextWidget();
 		Rectangle client = styledText.getClientArea();
 		gc.setBackground(styledText.getDisplay().getSystemColor(SWT.COLOR_WHITE));
 		styledText.drawBackground(gc, paintX, paintY, client.width, this.getHeightInPx());
@@ -119,8 +121,15 @@ public class CodeLensViewZone extends ViewZone {
 
 	@Override
 	protected int getOffsetAtLine(int lineIndex) {
-		String line = getStyledText().getLine(lineIndex);
-		return super.getOffsetAtLine(lineIndex) + getLeadingSpaces(line);
+		IDocument document = getTextViewer().getDocument();
+		try {
+			int lo = document.getLineOffset(lineIndex);
+			int ll = document.getLineLength(lineIndex);
+			String line = document.get(lo, ll);
+			return super.getOffsetAtLine(lineIndex) + getLeadingSpaces(line);
+		} catch (BadLocationException e) {
+			return -1;
+		}
 	}
 
 	private static int getLeadingSpaces(String line) {

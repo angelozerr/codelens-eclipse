@@ -3,12 +3,11 @@ package org.eclipse.codelens.editors.internal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.codelens.editors.ICodeLensController;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.text.ITextOperationTarget;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.provisional.codelens.CodeLensStrategy;
-import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IPageListener;
@@ -25,7 +24,7 @@ public class EditorTracker implements IWindowListener, IPageListener, IPartListe
 
 	private static EditorTracker INSTANCE;
 
-	private Map<IEditorPart, MonoReconciler> fAsYouTypeValidators = new HashMap<>();
+	private Map<IEditorPart, ICodeLensController> codeLensControllers = new HashMap<>();
 
 	private EditorTracker() {
 		init();
@@ -109,6 +108,15 @@ public class EditorTracker implements IWindowListener, IPageListener, IPartListe
 
 	@Override
 	public void partActivated(IWorkbenchPart part) {
+		if (part instanceof ITextEditor) {
+			ITextViewer textViewer = (ITextViewer) part.getAdapter(ITextOperationTarget.class);
+			if (textViewer != null) {
+				ICodeLensController controller = codeLensControllers.get(part);
+				if (controller != null) {
+					controller.refresh();
+				}
+			}
+		}
 	}
 
 	@Override
@@ -137,25 +145,27 @@ public class EditorTracker implements IWindowListener, IPageListener, IPartListe
 		if (part instanceof ITextEditor) {
 			ITextViewer textViewer = (ITextViewer) part.getAdapter(ITextOperationTarget.class);
 			if (textViewer != null) {
-				CodeLensStrategy strategy = new CodeLensStrategy(new EditorCodeLensContext((ITextEditor) part));
-				// TODO: manage target with extension point.
-				strategy.addTarget("java.codelens");
-				MonoReconciler reconciler = new MonoReconciler(strategy, false);
-				reconciler.setProgressMonitor(new NullProgressMonitor());
-				reconciler.setDelay(500);
-				reconciler.install(textViewer);
-				fAsYouTypeValidators.put(part, reconciler);
+				ICodeLensController controller = codeLensControllers.get(part);
+				if (controller == null) {
+					ITextEditor textEditor = (ITextEditor) part;
+					controller = CodeLensControllerRegistry.getInstance().create(textEditor);
+					if (controller != null) {
+						controller.setProgressMonitor(new NullProgressMonitor());
+						codeLensControllers.put(textEditor, controller);
+						//controller.install();
+					}
+				}
 			}
 		}
 	}
 
 	private void editorClosed(IEditorPart part) {
 		if (part instanceof ITextEditor) {
-			MonoReconciler processor = fAsYouTypeValidators.remove(part);
-			if (processor != null) {
-				processor.uninstall();
-				Assert.isTrue(null == fAsYouTypeValidators.get(part),
-						"An old TypeScriptDocumentRegionProcessor is not un-installed on Java Editor instance");
+			ICodeLensController controller = codeLensControllers.remove(part);
+			if (controller != null) {
+				controller.uninstall();
+				Assert.isTrue(null == codeLensControllers.get(part),
+						"An old ICodeLensController is not un-installed on Text Editor instance");
 			}
 		}
 	}

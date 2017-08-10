@@ -170,8 +170,7 @@ public class ViewZoneChangeAccessor implements IViewZoneChangeAccessor, ILineSpa
 	public void addZone(IViewZone zone) {
 		synchronized (viewZones) {
 			viewZones.add(zone);
-			StyledText styledText = textViewer.getTextWidget();
-			zone.setStyledText(styledText);
+			zone.setTextViewer(textViewer);
 		}
 	}
 
