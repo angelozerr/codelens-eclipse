@@ -33,7 +33,7 @@ public abstract class ViewZone implements IViewZone {
 		if (offsetAtLine != -1) {
 			try {
 				StyledText styledText = textViewer.getTextWidget();
-				afterLineNumber = styledText.getLineAtOffset(offsetAtLine);//textViewer.getDocument().getLineOfOffset(offsetAtLine);
+				afterLineNumber = textViewer.getDocument().getLineOfOffset(offsetAtLine); //styledText.getLineAtOffset(offsetAtLine);
 			} catch (Exception e) {
 				// e.printStackTrace();
 				return -1;
@@ -50,13 +50,13 @@ public abstract class ViewZone implements IViewZone {
 	}
 
 	protected int getOffsetAtLine(int lineIndex) {
-//		try {
-//			return textViewer.getDocument().getLineOffset(lineIndex);
-//		} catch (BadLocationException e) {
-//			return -1;
-//		}
-		StyledText styledText = textViewer.getTextWidget();
-		return styledText.getOffsetAtLine(lineIndex);
+		try {
+			return textViewer.getDocument().getLineOffset(lineIndex);
+		} catch (BadLocationException e) {
+			return -1;
+		}
+		//StyledText styledText = textViewer.getTextWidget();
+		//return styledText.getOffsetAtLine(lineIndex);
 	}
 
 	public void setOffsetAtLine(int offsetAtLine) {

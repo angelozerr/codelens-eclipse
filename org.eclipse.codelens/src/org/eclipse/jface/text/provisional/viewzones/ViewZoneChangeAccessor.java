@@ -10,6 +10,7 @@ import org.eclipse.jface.text.IPaintPositionManager;
 import org.eclipse.jface.text.IPainter;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension2;
+import org.eclipse.jface.text.JFaceTextUtil;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.patch.StyledTextPatcher;
 import org.eclipse.swt.custom.provisional.ILineSpacingProvider;
@@ -213,8 +214,8 @@ public class ViewZoneChangeAccessor implements IViewZoneChangeAccessor, ILineSpa
 	}
 
 	@Override
-	public Integer getLineSpacing(int lineIndex) {
-		int lineNumber = lineIndex + 1;
+	public Integer getLineSpacing(int widgetLine) {
+		int lineNumber = getLineNumber(widgetLine);
 		IViewZone viewZone = getViewZone(lineNumber);
 		if (viewZone != null) {
 			// There is view zone to render for the given line, update the line
@@ -222,6 +223,10 @@ public class ViewZoneChangeAccessor implements IViewZoneChangeAccessor, ILineSpa
 			return viewZone.getHeightInPx();
 		}
 		return null;
+	}
+
+	private int getLineNumber(int widgetLine) {
+		return JFaceTextUtil.widgetLine2ModelLine(textViewer, widgetLine) + 1;
 	}
 
 	@Override
@@ -310,10 +315,12 @@ public class ViewZoneChangeAccessor implements IViewZoneChangeAccessor, ILineSpa
 						// }
 					}
 				}
-				int lineNumber = lineIndex + 1;
+				int lineNumber = getLineNumber(lineIndex) - 1;
 				IViewZone viewZone = getViewZone(lineNumber);
 				if (viewZone != null) {
-					Point topLeft = fTextWidget.getLocationAtOffset(viewZone.getOffsetAtLine());
+					int offset = fTextWidget.getOffsetAtLine(lineIndex) + getLeadingSpaces(fTextWidget.getLine(lineIndex));
+					//JFaceTextUtil.modelLineToWidgetLine(viewer, modelLine)
+					Point topLeft = fTextWidget.getLocationAtOffset(offset);
 					y = topLeft.y; // fTextWidget.getLinePixel(lineIndex);
 					viewZone.draw(x, topLeft.x, y - viewZone.getHeightInPx(), gc);
 				}
@@ -321,4 +328,19 @@ public class ViewZoneChangeAccessor implements IViewZoneChangeAccessor, ILineSpa
 		}
 	}
 
+	private static int getLeadingSpaces(String line) {
+		int counter = 0;
+
+		char[] chars = line.toCharArray();
+		for (char c : chars) {
+			if (c == '\t')
+				counter++;
+			else if (c == ' ')
+				counter++;
+			else
+				break;
+		}
+
+		return counter;
+	}
 }
