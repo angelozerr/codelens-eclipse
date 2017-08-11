@@ -1,70 +1,75 @@
-package org.eclipse.jface.text.provisional.codelens;
+package org.eclipse.codelens.editors.internal;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.codelens.internal.CodeLensPlugin;
+import org.eclipse.codelens.editors.ICodeLensController;
+import org.eclipse.codelens.editors.ICodeLensControllerFactory;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionDelta;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IRegistryChangeEvent;
 import org.eclipse.core.runtime.IRegistryChangeListener;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.ui.texteditor.ITextEditor;
 
-public class CodeLensProviderRegistry implements IRegistryChangeListener {
+public class CodeLensControllerRegistry implements IRegistryChangeListener {
 
-	private static final CodeLensProviderRegistry INSTANCE = new CodeLensProviderRegistry();
-	private static final String EXTENSION_CODELENS_PROVIDERS = "codeLensProviders";
+	private static final CodeLensControllerRegistry INSTANCE = new CodeLensControllerRegistry();
+	private static final String EXTENSION_CODELENS_CONTROLLER_FACTORIES = "codeLensControllerFactories";
 
-	public static CodeLensProviderRegistry getInstance() {
+	public static CodeLensControllerRegistry getInstance() {
 		return INSTANCE;
 	}
 
-	private boolean codeLensProviderLoaded;
-	private final Map<String, List<ICodeLensProvider>> providersMap;
+	private boolean loaded;
+	private final List<ICodeLensControllerFactory> factories;
 
-	public CodeLensProviderRegistry() {
-		this.providersMap = new HashMap<>();
-		this.codeLensProviderLoaded = false;
+	public CodeLensControllerRegistry() {
+		this.factories = new ArrayList<>();
+		this.loaded = false;
 	}
 
-	public void register(String target, ICodeLensProvider provider) {
-		List<ICodeLensProvider> providers = providersMap.get(target);
-		if (providers == null) {
-			providers = new ArrayList<>();
-			providersMap.put(target, providers);
+	public ICodeLensController create(ITextEditor textEditor) {
+		ICodeLensControllerFactory factory = getFactory(textEditor);
+		if (factory != null) {
+			return factory.create(textEditor);
 		}
-		providers.add(provider);
+		return null;
 	}
 
-	public List<ICodeLensProvider> all(String target) {
-		loadCodeLensProvidersIfNeeded();
-		return providersMap.get(target);
+	public ICodeLensControllerFactory getFactory(ITextEditor textEditor) {
+		loadFactoriesIfNeeded();
+		for (ICodeLensControllerFactory factory : factories) {
+			if (factory.isRelevant(textEditor)) {
+				return factory;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public void registryChanged(IRegistryChangeEvent event) {
-		IExtensionDelta[] deltas = event.getExtensionDeltas(CodeLensPlugin.PLUGIN_ID, EXTENSION_CODELENS_PROVIDERS);
+		IExtensionDelta[] deltas = event.getExtensionDeltas(CodeLensEditorPlugin.PLUGIN_ID,
+				EXTENSION_CODELENS_CONTROLLER_FACTORIES);
 		if (deltas != null) {
 			for (IExtensionDelta delta : deltas)
 				handleCodeLensProvidersDelta(delta);
 		}
 	}
 
-	private void loadCodeLensProvidersIfNeeded() {
-		if (codeLensProviderLoaded) {
+	private void loadFactoriesIfNeeded() {
+		if (loaded) {
 			return;
 		}
-		loadCodeLensProviders();
+		loadFactories();
 	}
 
 	/**
 	 * Load the SourceMap language supports.
 	 */
-	private synchronized void loadCodeLensProviders() {
-		if (codeLensProviderLoaded) {
+	private synchronized void loadFactories() {
+		if (loaded) {
 			return;
 		}
 
@@ -73,11 +78,11 @@ public class CodeLensProviderRegistry implements IRegistryChangeListener {
 			if (registry == null) {
 				return;
 			}
-			IConfigurationElement[] cf = registry.getConfigurationElementsFor(CodeLensPlugin.PLUGIN_ID,
-					EXTENSION_CODELENS_PROVIDERS);
+			IConfigurationElement[] cf = registry.getConfigurationElementsFor(CodeLensEditorPlugin.PLUGIN_ID,
+					EXTENSION_CODELENS_CONTROLLER_FACTORIES);
 			loadCodeLensProvidersFromExtension(cf);
 		} finally {
-			codeLensProviderLoaded = true;
+			loaded = true;
 		}
 	}
 
@@ -87,17 +92,16 @@ public class CodeLensProviderRegistry implements IRegistryChangeListener {
 	private synchronized void loadCodeLensProvidersFromExtension(IConfigurationElement[] cf) {
 		for (IConfigurationElement ce : cf) {
 			try {
-				String target = ce.getAttribute("targetId");
-				ICodeLensProvider provider = (ICodeLensProvider) ce.createExecutableExtension("class");
-				register(target, provider);
+				ICodeLensControllerFactory factory = (ICodeLensControllerFactory) ce.createExecutableExtension("class");
+				factories.add(factory);
 			} catch (Throwable e) {
-				CodeLensPlugin.log(e);
+				CodeLensEditorPlugin.log(e);
 			}
 		}
 	}
 
 	protected void handleCodeLensProvidersDelta(IExtensionDelta delta) {
-		if (!codeLensProviderLoaded) // not loaded yet
+		if (!loaded) // not loaded yet
 			return;
 
 		IConfigurationElement[] cf = delta.getExtension().getConfigurationElements();
@@ -126,7 +130,7 @@ public class CodeLensProviderRegistry implements IRegistryChangeListener {
 
 	public void initialize() {
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		registry.addRegistryChangeListener(this, CodeLensPlugin.PLUGIN_ID);
+		registry.addRegistryChangeListener(this, CodeLensEditorPlugin.PLUGIN_ID);
 	}
 
 	public void destroy() {

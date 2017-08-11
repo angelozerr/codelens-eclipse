@@ -6,7 +6,6 @@ Bundle-Version: 1.1.0.qualifier
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface.text,
  org.eclipse.jface,
- org.eclipse.jdt.core,
  org.eclipse.codelens,
  org.eclipse.ui.ide,
  org.eclipse.ui.workbench,

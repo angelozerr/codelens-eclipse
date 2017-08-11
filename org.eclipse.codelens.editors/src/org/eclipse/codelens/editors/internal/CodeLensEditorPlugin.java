@@ -14,16 +14,15 @@ package org.eclipse.codelens.editors.internal;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.text.provisional.codelens.CodeLensProviderRegistry;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 /**
  * The activator class controls the plug-in life cycle
  */
 public class CodeLensEditorPlugin extends AbstractUIPlugin {
 
-	public static final String PLUGIN_ID = "org.eclipse.codelens.editor"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "org.eclipse.codelens.editors"; //$NON-NLS-1$
 
 	// The shared instance.
 	private static CodeLensEditorPlugin plugin;
@@ -39,12 +38,12 @@ public class CodeLensEditorPlugin extends AbstractUIPlugin {
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		CodeLensProviderRegistry.getInstance().initialize();
+		CodeLensControllerRegistry.getInstance().initialize();
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
-		CodeLensProviderRegistry.getInstance().initialize();
+		CodeLensControllerRegistry.getInstance().initialize();
 		plugin = null;
 		super.stop(context);
 	}

@@ -1,6 +1,5 @@
-package org.eclipse.codelens.editors.internal;
+package org.eclipse.codelens.editors;
 
-import org.eclipse.codelens.editors.IEditorCodeLensContext;
 import org.eclipse.jface.text.ITextOperationTarget;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.ui.texteditor.ITextEditor;

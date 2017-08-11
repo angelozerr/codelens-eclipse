@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.codelens" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="org.eclipse.codelens.editors" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.codelens" id="codelensProviders" name="CodeLens Provider"/>
+         <meta.schema plugin="org.eclipse.codelens.editors" id="codeLensControllerFactories" name="CodeLens Controller Factories"/>
       </appInfo>
       <documentation>
-         Extension point to register CodeLens providers.
+         Extension point to register CodeLens controller factories.
       </documentation>
    </annotation>
 
@@ -18,7 +18,7 @@
       </annotation>
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="codeLensProvider" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="codeLensControllerFactory" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -44,35 +44,21 @@
       </complexType>
    </element>
 
-   <element name="codeLensProvider">
+   <element name="codeLensControllerFactory">
       <annotation>
          <documentation>
-            This extension point allows developers to register TextMate grammars.
+            This extension point allows developers to register CodeLens controller factory.
          </documentation>
       </annotation>
       <complexType>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  CodeLens Provider class.
+                  CodeLens Controller factory class.
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.jface.text.provisional.codelens.ICodeLensProvider"/>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.codelens.editors.ICodeLensControllerFactory"/>
                </appInfo>
-            </annotation>
-         </attribute>
-         <attribute name="targetId" type="string" use="required">
-            <annotation>
-               <documentation>
-                  Target
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="name" type="string" use="required">
-            <annotation>
-               <documentation>
-                  CodeLens providers name.
-               </documentation>
             </annotation>
          </attribute>
       </complexType>

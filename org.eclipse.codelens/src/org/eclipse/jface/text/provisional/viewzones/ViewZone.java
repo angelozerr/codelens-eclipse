@@ -1,11 +1,13 @@
 package org.eclipse.jface.text.provisional.viewzones;
 
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.MouseEvent;
 
 public abstract class ViewZone implements IViewZone {
 
-	private StyledText styledText;
+	private ITextViewer textViewer;
 	private int offsetAtLine;
 	private int afterLineNumber;
 	private int height;
@@ -17,8 +19,8 @@ public abstract class ViewZone implements IViewZone {
 		setAfterLineNumber(afterLineNumber);
 	}
 
-	public void setStyledText(StyledText styledText) {
-		this.styledText = styledText;
+	public void setTextViewer(ITextViewer textViewer) {
+		this.textViewer = textViewer;
 	}
 
 	public void setAfterLineNumber(int afterLineNumber) {
@@ -30,7 +32,8 @@ public abstract class ViewZone implements IViewZone {
 	public int getAfterLineNumber() {
 		if (offsetAtLine != -1) {
 			try {
-				afterLineNumber = styledText.getLineAtOffset(offsetAtLine);
+				StyledText styledText = textViewer.getTextWidget();
+				afterLineNumber = textViewer.getDocument().getLineOfOffset(offsetAtLine); //styledText.getLineAtOffset(offsetAtLine);
 			} catch (Exception e) {
 				// e.printStackTrace();
 				return -1;
@@ -47,7 +50,13 @@ public abstract class ViewZone implements IViewZone {
 	}
 
 	protected int getOffsetAtLine(int lineIndex) {
-		return styledText.getOffsetAtLine(lineIndex);
+		try {
+			return textViewer.getDocument().getLineOffset(lineIndex);
+		} catch (BadLocationException e) {
+			return -1;
+		}
+		//StyledText styledText = textViewer.getTextWidget();
+		//return styledText.getOffsetAtLine(lineIndex);
 	}
 
 	public void setOffsetAtLine(int offsetAtLine) {
@@ -63,7 +72,7 @@ public abstract class ViewZone implements IViewZone {
 	@Override
 	public void dispose() {
 		this.disposed = true;
-		this.setStyledText(null);
+		this.setTextViewer(null);
 	}
 
 	@Override
@@ -73,7 +82,7 @@ public abstract class ViewZone implements IViewZone {
 
 	@Override
 	public void mouseHover(MouseEvent event) {
-		// System.err.println("mouseHover");
+		// System.err.println("mouseHover");tt
 	}
 
 	@Override
@@ -91,7 +100,11 @@ public abstract class ViewZone implements IViewZone {
 
 	}
 
-	public StyledText getStyledText() {
-		return styledText;
+//	public StyledText getStyledText() {
+//		return styledText;
+//	}
+	
+	public ITextViewer getTextViewer() {
+		return textViewer;
 	}
 }

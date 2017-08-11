@@ -2,7 +2,7 @@
 <?eclipse version="3.0"?>
 <!--
 ###############################################################################
-# Copyright (c) 2015-2016 Angelo Zerr and others.
+# Copyright (c) 2016-2017 Angelo Zerr and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
@@ -14,24 +14,27 @@
  -->
 <plugin>
 	 
-	<!-- Java "references" CodeLens -->
+	 <extension
+	       point="org.eclipse.codelens.editors.codeLensControllerFactories">
+	     <codeLensControllerFactory
+	           class="org.eclipse.codelens.jdt.internal.JavaCodeLensControllerProvider" >
+	     </codeLensControllerFactory>
+	 </extension>
+	 
 	<extension
       point="org.eclipse.codelens.codeLensProviders">
+       <!-- Java "references" CodeLens -->
 	   <codeLensProvider
 	   		 name="%JavaReferencesCodeLensProvider.name"
 	         class="org.eclipse.codelens.jdt.internal.JavaReferencesCodeLensProvider"
-	         target="java.codelens">
+	         targetId="java.codelens">
 	   </codeLensProvider>
-	</extension>
-	
-	<!-- Java "implementations" CodeLens -->
-	<extension
-      point="org.eclipse.codelens.codeLensProviders">
+	   <!-- Java "implementations" CodeLens -->
 	   <codeLensProvider
 	   		 name="%JavaImplementationsCodeLensProvider.name"
 	         class="org.eclipse.codelens.jdt.internal.JavaImplementationsCodeLensProvider"
-	         target="java.codelens">
+	         targetId="java.codelens">
 	   </codeLensProvider>
-	</extension>	 
+	</extension>
 	 
 </plugin>        

@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.ISourceReference;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
@@ -44,8 +45,14 @@ public class JavaReferencesCodeLensProvider implements ICodeLensProvider {
 	
 	@Override
 	public ICodeLens[] provideCodeLenses(ICodeLensContext context, IProgressMonitor monitor) {
-		ICompilationUnit unit = JDTUtils.resolveCompilationUnit(((IEditorCodeLensContext) context).getTextEditor());
-		if (unit == null || !unit.getResource().exists() || monitor.isCanceled()) {
+//		try {
+//			Thread.sleep(1000);
+//		} catch (InterruptedException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+		ITypeRoot unit = JDTUtils.resolveCompilationUnit(((IEditorCodeLensContext) context).getTextEditor());
+		if (unit == null || /*!unit.getResource().exists() ||*/ monitor.isCanceled()) {
 			return null;
 		}
 		try {
@@ -64,7 +71,7 @@ public class JavaReferencesCodeLensProvider implements ICodeLensProvider {
 		return null;
 	}
 
-	private void collectCodeLenses(ICompilationUnit unit, IJavaElement[] elements, List<ICodeLens> lenses,
+	private void collectCodeLenses(ITypeRoot unit, IJavaElement[] elements, List<ICodeLens> lenses,
 			IProgressMonitor monitor) throws JavaModelException {
 		for (IJavaElement element : elements) {
 			if (monitor.isCanceled()) {
@@ -91,7 +98,7 @@ public class JavaReferencesCodeLensProvider implements ICodeLensProvider {
 		}
 	}
 	
-	private ICodeLens getCodeLens(String type, IJavaElement element, ICompilationUnit unit) throws JavaModelException {		
+	private ICodeLens getCodeLens(String type, IJavaElement element, ITypeRoot unit) throws JavaModelException {		
 		ISourceRange r = ((ISourceReference) element).getNameRange();
 		final Range range = JDTUtils.toRange(unit, r.getOffset(), r.getLength());
 		
@@ -107,7 +114,7 @@ public class JavaReferencesCodeLensProvider implements ICodeLensProvider {
 		if (lens == null) {
 			return null;
 		}
-		ICompilationUnit unit = JDTUtils.resolveCompilationUnit(((IEditorCodeLensContext) context).getTextEditor());
+		ITypeRoot unit = JDTUtils.resolveCompilationUnit(((IEditorCodeLensContext) context).getTextEditor());
 		if (unit == null) {
 			return lens;
 		}
