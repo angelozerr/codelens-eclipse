@@ -2,6 +2,7 @@ package org.eclipse.codelens.jdt.internal;
 
 import java.lang.reflect.Method;
 
+import org.eclipse.codelens.editors.AbstractCodeLensController;
 import org.eclipse.codelens.editors.EditorCodeLensContext;
 import org.eclipse.codelens.editors.ICodeLensController;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -11,29 +12,20 @@ import org.eclipse.jdt.internal.ui.text.java.IJavaReconcilingListener;
 import org.eclipse.jface.text.provisional.codelens.CodeLensStrategy;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-public class JavaCodeLensController implements ICodeLensController, IJavaReconcilingListener {
+public class JavaCodeLensController extends AbstractCodeLensController implements IJavaReconcilingListener {
 
-	private final CompilationUnitEditor textEditor;
-	private final CodeLensStrategy strategy;
 	private IProgressMonitor monitor;
 	private boolean listenerAdded;
 
 	public JavaCodeLensController(CompilationUnitEditor textEditor) {
-		this.textEditor = textEditor;
-		strategy = new CodeLensStrategy(new EditorCodeLensContext((ITextEditor) textEditor));
-		strategy.addTarget("java.codelens");
-	}
-
-	@Override
-	public void install() {
-
-		// refresh();
+		super((ITextEditor )textEditor);
+		super.addTarget("java.codelens");
 	}
 
 	@Override
 	public void setProgressMonitor(IProgressMonitor monitor) {
 		this.monitor = monitor;
-		strategy.setProgressMonitor(monitor);
+		getStrategy().setProgressMonitor(monitor);
 	}
 
 	@Override
@@ -41,15 +33,15 @@ public class JavaCodeLensController implements ICodeLensController, IJavaReconci
 		if (monitor != null) {
 			monitor.setCanceled(true);
 		}
-		removeReconcileListener(textEditor);
-		strategy.dispose();
+		removeReconcileListener((CompilationUnitEditor) getTextEditor());
+		getStrategy().dispose();
 	}
 
 	@Override
 	public void refresh() {
-		strategy.initialReconcile();
+		getStrategy().initialReconcile();
 		if (!listenerAdded) {
-			addReconcileListener(textEditor);
+			addReconcileListener((CompilationUnitEditor) getTextEditor());
 			listenerAdded = true;
 		}
 	}
@@ -86,5 +78,11 @@ public class JavaCodeLensController implements ICodeLensController, IJavaReconci
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void install() {
+		// TODO Auto-generated method stub
+		
 	}
 }
