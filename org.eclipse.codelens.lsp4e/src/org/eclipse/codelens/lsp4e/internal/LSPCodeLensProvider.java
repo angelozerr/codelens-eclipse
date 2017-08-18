@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.codelens.editors.IEditorCodeLensContext;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -19,10 +18,10 @@ import org.eclipse.lsp4j.CodeLensParams;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-public class LSCodeLensProvider implements ICodeLensProvider {
+public class LSPCodeLensProvider implements ICodeLensProvider {
 
 	@Override
-	public ICodeLens[] provideCodeLenses(ICodeLensContext context, IProgressMonitor monitor) {
+	public CompletableFuture<ICodeLens[]> provideCodeLenses(ICodeLensContext context, IProgressMonitor monitor) {
 		ITextEditor textEditor = ((IEditorCodeLensContext) context).getTextEditor();
 
 		LSPDocumentInfo info = null;
@@ -36,48 +35,57 @@ public class LSCodeLensProvider implements ICodeLensProvider {
 		}
 		if (info != null) {
 
-			CodeLensParams param = new CodeLensParams(new TextDocumentIdentifier(info.getFileUri().toString()));;
-			final CompletableFuture<List<? extends CodeLens>> codeLens = info.getLanguageClient().getTextDocumentService().codeLens(param);
-			try {
+			CodeLensParams param = new CodeLensParams(new TextDocumentIdentifier(info.getFileUri().toString()));
+			final CompletableFuture<List<? extends CodeLens>> codeLens = info.getLanguageClient()
+					.getTextDocumentService().codeLens(param);
+			return codeLens.thenApply(lens -> {
 				List<ICodeLens> lenses = new ArrayList<>();
-				List<? extends CodeLens> lens = codeLens.get(5000, TimeUnit.MILLISECONDS);
 				for (CodeLens cl : lens) {
-					lenses.add(new LSCodeLens(cl));
+					lenses.add(new LSPCodeLens(cl));
 				}
 				return lenses.toArray(new ICodeLens[lenses.size()]);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
+			});
+			// try {
+			//
+			//
+			//
+			// List<ICodeLens> lenses = new ArrayList<>();
+			// List<? extends CodeLens> lens = codeLens.get(5000, TimeUnit.MILLISECONDS);
+			// for (CodeLens cl : lens) {
+			// lenses.add(new LSPCodeLens(cl));
+			// }
+			// return lenses.toArray(new ICodeLens[lenses.size()]);
+			// } catch (Exception e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+
 		}
 		return null;
 	}
 
 	@Override
-	public ICodeLens resolveCodeLens(ICodeLensContext context, ICodeLens codeLens, IProgressMonitor monitor) {
+	public CompletableFuture<ICodeLens> resolveCodeLens(ICodeLensContext context, ICodeLens codeLens,
+			IProgressMonitor monitor) {
 		ITextEditor textEditor = ((IEditorCodeLensContext) context).getTextEditor();
 
 		LSPDocumentInfo info = null;
 		Collection<LSPDocumentInfo> infos = LanguageServiceAccessor.getLSPDocumentInfosFor(
 				LSPEclipseUtils.getDocument((ITextEditor) textEditor),
-				capabilities -> capabilities.getCodeLensProvider() != null);
+				capabilities -> capabilities.getCodeLensProvider() != null
+						&& capabilities.getCodeLensProvider().isResolveProvider());
 		if (!infos.isEmpty()) {
 			info = infos.iterator().next();
 		} else {
 			info = null;
 		}
 		if (info != null) {
-			LSCodeLens lscl = ((LSCodeLens) codeLens);
-			CodeLens unresolved = lscl.getCl(); 
-			try {
-				CodeLens resolved = info.getLanguageClient().getTextDocumentService().resolveCodeLens(unresolved).get(5000, TimeUnit.MILLISECONDS);
+			LSPCodeLens lscl = ((LSPCodeLens) codeLens);
+			CodeLens unresolved = lscl.getCl();
+			return info.getLanguageClient().getTextDocumentService().resolveCodeLens(unresolved).thenApply(resolved -> {
 				lscl.update(resolved);
 				return lscl;
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			});
 		}
 		return null;
 	}

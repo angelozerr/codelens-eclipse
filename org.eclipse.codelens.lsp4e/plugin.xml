@@ -17,7 +17,7 @@
 	 <extension
 	       point="org.eclipse.codelens.editors.codeLensControllerFactories">
 	     <codeLensControllerFactory
-	           class="org.eclipse.codelens.lsp4e.internal.LSCodeLensControllerProvider" >
+	           class="org.eclipse.codelens.lsp4e.internal.LSPCodeLensControllerProvider" >
 	     </codeLensControllerFactory>
 	 </extension>
 	 
@@ -26,7 +26,7 @@
        <!-- LS CodeLens -->
 	   <codeLensProvider
 	   		 name="%LSCodeLensProvider.name"
-	         class="org.eclipse.codelens.lsp4e.internal.LSCodeLensProvider"
+	         class="org.eclipse.codelens.lsp4e.internal.LSPCodeLensProvider"
 	         targetId="lsp4e.codelens">
 	   </codeLensProvider>
 	</extension>

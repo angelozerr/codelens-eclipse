@@ -5,10 +5,11 @@ import org.eclipse.codelens.editors.ICodeLensController;
 import org.eclipse.codelens.editors.ICodeLensControllerFactory;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-public class LSCodeLensControllerProvider implements ICodeLensControllerFactory {
+public class LSPCodeLensControllerProvider implements ICodeLensControllerFactory {
 
 	@Override
 	public boolean isRelevant(ITextEditor textEditor) {
+		
 		return true;
 	}
 

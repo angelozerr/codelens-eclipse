@@ -79,11 +79,11 @@ public class CodeLensStrategy implements IReconcilingStrategy, IReconcilingStrat
 						if (isCanceled()) {
 							return Collections.emptyList();
 						}
-						ICodeLens[] lenses = provider.provideCodeLenses(context, getProgressMonitor());
-						if (lenses != null) {
-							for (int i = 0; i < lenses.length; i++) {
-								symbols.add(new CodeLensData(lenses[i], provider));
-							}
+						try {
+							ICodeLens[] lenses = provider.provideCodeLenses(context, getProgressMonitor()).get();
+							fillData(symbols, provider, lenses);
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
 					}
 					Collections.sort(symbols, (a, b) -> {
@@ -109,6 +109,14 @@ public class CodeLensStrategy implements IReconcilingStrategy, IReconcilingStrat
 			}
 			return symbols;
 		});
+	}
+
+	private void fillData(List<CodeLensData> symbols, ICodeLensProvider provider, ICodeLens[] lenses) {
+		if (lenses != null) {
+			for (int i = 0; i < lenses.length; i++) {
+				symbols.add(new CodeLensData(lenses[i], provider));
+			}
+		}
 	}
 
 	private void renderCodeLensSymbols(Collection<CodeLensData> symbols) {
@@ -236,7 +244,14 @@ public class CodeLensStrategy implements IReconcilingStrategy, IReconcilingStrat
 				if (isCanceled()) {
 					return;
 				}
-				ICodeLens symbol = req.getProvider().resolveCodeLens(context, req.getSymbol(), monitor);
+				ICodeLens symbol = null;
+				ICodeLensProvider provider = req.getProvider();
+
+				try {
+					symbol = provider.resolveCodeLens(context, req.getSymbol(), monitor).get();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				if (symbol != null) {
 					resolvedSymbols.add(symbol);
 				}

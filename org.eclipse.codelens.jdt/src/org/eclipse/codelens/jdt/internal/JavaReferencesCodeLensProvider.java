@@ -27,10 +27,12 @@ import org.eclipse.jdt.core.search.SearchMatch;
 import org.eclipse.jdt.core.search.SearchParticipant;
 import org.eclipse.jdt.core.search.SearchPattern;
 import org.eclipse.jdt.core.search.SearchRequestor;
+import org.eclipse.jdt.internal.junit.util.CoreTestSearchEngine;
+import org.eclipse.jdt.junit.JUnitCore;
+import org.eclipse.jface.text.provisional.codelens.AbstractSyncCodeLensProvider;
 import org.eclipse.jface.text.provisional.codelens.Command;
 import org.eclipse.jface.text.provisional.codelens.ICodeLens;
 import org.eclipse.jface.text.provisional.codelens.ICodeLensContext;
-import org.eclipse.jface.text.provisional.codelens.ICodeLensProvider;
 import org.eclipse.jface.text.provisional.codelens.Range;
 
 /**
@@ -38,21 +40,21 @@ import org.eclipse.jface.text.provisional.codelens.Range;
  * @see https://github.com/eclipse/eclipse.jdt.ls/blob/master/org.eclipse.jdt.ls.core/src/org/eclipse/jdt/ls/core/internal/handlers/CodeLensHandler.java
  *
  */
-public class JavaReferencesCodeLensProvider implements ICodeLensProvider {
+public class JavaReferencesCodeLensProvider extends AbstractSyncCodeLensProvider {
 
 	private static final String IMPLEMENTATION_TYPE = "implementations";
 	private static final String REFERENCES_TYPE = "references";
-	
+
 	@Override
-	public ICodeLens[] provideCodeLenses(ICodeLensContext context, IProgressMonitor monitor) {
-//		try {
-//			Thread.sleep(1000);
-//		} catch (InterruptedException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
+	protected ICodeLens[] provideSyncCodeLenses(ICodeLensContext context, IProgressMonitor monitor) {
+		// try {
+		// Thread.sleep(1000);
+		// } catch (InterruptedException e1) {
+		// // TODO Auto-generated catch block
+		// e1.printStackTrace();
+		// }
 		ITypeRoot unit = JDTUtils.resolveCompilationUnit(((IEditorCodeLensContext) context).getTextEditor());
-		if (unit == null || /*!unit.getResource().exists() ||*/ monitor.isCanceled()) {
+		if (unit == null || /* !unit.getResource().exists() || */ monitor.isCanceled()) {
 			return null;
 		}
 		try {
@@ -62,6 +64,17 @@ public class JavaReferencesCodeLensProvider implements ICodeLensProvider {
 			if (monitor.isCanceled()) {
 				lenses.clear();
 			}
+
+			try {
+				if (CoreTestSearchEngine.isTestOrTestSuite(unit.findPrimaryType())) {
+					IType[] tests = JUnitCore.findTestTypes(unit, monitor);
+					System.err.println(tests);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			return lenses.toArray(new ICodeLens[lenses.size()]);
 		} catch (JavaModelException e) {
 			// JavaLanguageServerPlugin.logException("Problem getting code lenses for" +
@@ -83,11 +96,12 @@ public class JavaReferencesCodeLensProvider implements ICodeLensProvider {
 				continue;
 			}
 
-			//if (preferenceManager.getPreferences().isReferencesCodeLensEnabled()) {
-				ICodeLens lens = getCodeLens(REFERENCES_TYPE, element, unit);
-				lenses.add(lens);
-			//}
-			//if (preferenceManager.getPreferences().isImplementationsCodeLensEnabled() && element instanceof IType) {
+			// if (preferenceManager.getPreferences().isReferencesCodeLensEnabled()) {
+			ICodeLens lens = getCodeLens(REFERENCES_TYPE, element, unit);
+			lenses.add(lens);
+			// }
+			// if (preferenceManager.getPreferences().isImplementationsCodeLensEnabled() &&
+			// element instanceof IType) {
 			if (element instanceof IType) {
 				IType type = (IType) element;
 				if (type.isInterface() || Flags.isAbstract(type.getFlags())) {
@@ -97,20 +111,20 @@ public class JavaReferencesCodeLensProvider implements ICodeLensProvider {
 			}
 		}
 	}
-	
-	private ICodeLens getCodeLens(String type, IJavaElement element, ITypeRoot unit) throws JavaModelException {		
+
+	private ICodeLens getCodeLens(String type, IJavaElement element, ITypeRoot unit) throws JavaModelException {
 		ISourceRange r = ((ISourceReference) element).getNameRange();
 		final Range range = JDTUtils.toRange(unit, r.getOffset(), r.getLength());
-		
+
 		ICodeLens lens = new JavaCodeLens(range);
-		
-		//String uri = ResourceUtils.toClientUri(JDTUtils.getFileURI(unit));
-		//lens.setData(Arrays.asList(uri, range.getStart(), type));
+
+		// String uri = ResourceUtils.toClientUri(JDTUtils.getFileURI(unit));
+		// lens.setData(Arrays.asList(uri, range.getStart(), type));
 		return lens;
 	}
 
 	@Override
-	public ICodeLens resolveCodeLens(ICodeLensContext context, ICodeLens lens, IProgressMonitor monitor) {
+	protected ICodeLens resolveSyncCodeLens(ICodeLensContext context, ICodeLens lens, IProgressMonitor monitor) {
 		if (lens == null) {
 			return null;
 		}
@@ -118,9 +132,9 @@ public class JavaReferencesCodeLensProvider implements ICodeLensProvider {
 		if (unit == null) {
 			return lens;
 		}
-		Range range = lens.getRange();		
+		Range range = lens.getRange();
 		try {
-			IJavaElement element = JDTUtils.findElementAtSelection(unit,  range);
+			IJavaElement element = JDTUtils.findElementAtSelection(unit, range);
 			List<Location> references = findReferences(element, monitor);
 			int refCount = references.size();
 			((JavaCodeLens) lens).setCommand(new Command(refCount + " references", ""));
@@ -130,7 +144,7 @@ public class JavaReferencesCodeLensProvider implements ICodeLensProvider {
 		}
 		return lens;
 	}
-	
+
 	private List<Location> findReferences(IJavaElement element, IProgressMonitor monitor)
 			throws JavaModelException, CoreException {
 		if (element == null) {
@@ -142,25 +156,26 @@ public class JavaReferencesCodeLensProvider implements ICodeLensProvider {
 		engine.search(pattern, new SearchParticipant[] { SearchEngine.getDefaultSearchParticipant() },
 				createSearchScope(), new SearchRequestor() {
 
-			@Override
-			public void acceptSearchMatch(SearchMatch match) throws CoreException {
-				Object o = match.getElement();
-				if (o instanceof IJavaElement) {
-					IJavaElement element = (IJavaElement) o;
-					ICompilationUnit compilationUnit = (ICompilationUnit) element
-							.getAncestor(IJavaElement.COMPILATION_UNIT);
-					if (compilationUnit == null) {
-						return;
+					@Override
+					public void acceptSearchMatch(SearchMatch match) throws CoreException {
+						Object o = match.getElement();
+						if (o instanceof IJavaElement) {
+							IJavaElement element = (IJavaElement) o;
+							ICompilationUnit compilationUnit = (ICompilationUnit) element
+									.getAncestor(IJavaElement.COMPILATION_UNIT);
+							if (compilationUnit == null) {
+								return;
+							}
+							Location location = null; // JDTUtils.toLocation(compilationUnit, match.getOffset(),
+														// match.getLength());
+							result.add(location);
+						}
 					}
-					Location location = null; //JDTUtils.toLocation(compilationUnit, match.getOffset(), match.getLength());
-					result.add(location);
-				}
-			}
-		}, monitor);
+				}, monitor);
 
 		return result;
 	}
-	
+
 	private IJavaSearchScope createSearchScope() throws JavaModelException {
 		IJavaProject[] projects = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getJavaProjects();
 		return SearchEngine.createJavaSearchScope(projects, IJavaSearchScope.SOURCES);

@@ -6,15 +6,15 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.provisional.codelens.AbstractSyncCodeLensProvider;
 import org.eclipse.jface.text.provisional.codelens.Command;
 import org.eclipse.jface.text.provisional.codelens.ICodeLens;
 import org.eclipse.jface.text.provisional.codelens.ICodeLensContext;
-import org.eclipse.jface.text.provisional.codelens.ICodeLensProvider;
 
-public class ClassImplementationsCodeLensProvider implements ICodeLensProvider {
+public class ClassImplementationsCodeLensProvider extends AbstractSyncCodeLensProvider {
 
 	@Override
-	public ICodeLens[] provideCodeLenses(ICodeLensContext context, IProgressMonitor monitor) {
+	public ICodeLens[] provideSyncCodeLenses(ICodeLensContext context, IProgressMonitor monitor) {
 		ITextViewer textViewer = context.getViewer();
 		IDocument document = textViewer.getDocument();
 		List<ICodeLens> lenses = new ArrayList<>();
@@ -42,7 +42,7 @@ public class ClassImplementationsCodeLensProvider implements ICodeLensProvider {
 	}
 
 	@Override
-	public ICodeLens resolveCodeLens(ICodeLensContext context, ICodeLens codeLens, IProgressMonitor monitor) {
+	public ICodeLens resolveSyncCodeLens(ICodeLensContext context, ICodeLens codeLens, IProgressMonitor monitor) {
 		ITextViewer textViewer = context.getViewer();
 		IDocument document = textViewer.getDocument();
 		String className = ((ClassCodeLens) codeLens).getClassName();

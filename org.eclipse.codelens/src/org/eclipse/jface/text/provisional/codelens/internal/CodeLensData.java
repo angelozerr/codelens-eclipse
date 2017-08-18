@@ -1,7 +1,7 @@
 package org.eclipse.jface.text.provisional.codelens.internal;
 
-import org.eclipse.jface.text.provisional.codelens.ICodeLens;
 import org.eclipse.jface.text.provisional.codelens.ICodeLensProvider;
+import org.eclipse.jface.text.provisional.codelens.ICodeLens;
 
 public class CodeLensData {
 

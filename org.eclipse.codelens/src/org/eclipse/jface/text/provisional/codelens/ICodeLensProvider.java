@@ -1,5 +1,7 @@
 package org.eclipse.jface.text.provisional.codelens;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
@@ -22,7 +24,7 @@ public interface ICodeLensProvider {
 	 *         of a result can be signaled by returning `undefined`, `null`, or an
 	 *         empty array.
 	 */
-	ICodeLens[] provideCodeLenses(ICodeLensContext context, IProgressMonitor monitor);
+	CompletableFuture<ICodeLens[]> provideCodeLenses(ICodeLensContext context, IProgressMonitor monitor);
 
 	/**
 	 * This function will be called for each visible code lens, usually when
@@ -35,5 +37,6 @@ public interface ICodeLensProvider {
 	 *            A cancellation token.
 	 * @return The given, resolved code lens or thenable that resolves to such.
 	 */
-	ICodeLens resolveCodeLens(ICodeLensContext context, ICodeLens codeLens, IProgressMonitor monitor);
+	CompletableFuture<ICodeLens> resolveCodeLens(ICodeLensContext context, ICodeLens codeLens,
+			IProgressMonitor monitor);
 }

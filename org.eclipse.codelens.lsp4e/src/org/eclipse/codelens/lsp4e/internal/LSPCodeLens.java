@@ -4,11 +4,11 @@ import org.eclipse.jface.text.provisional.codelens.CodeLens;
 import org.eclipse.jface.text.provisional.codelens.Range;
 import org.eclipse.lsp4j.Command;
 
-public class LSCodeLens extends CodeLens {
+public class LSPCodeLens extends CodeLens {
 
 	private org.eclipse.lsp4j.CodeLens cl;
 
-	public LSCodeLens(org.eclipse.lsp4j.CodeLens cl) {
+	public LSPCodeLens(org.eclipse.lsp4j.CodeLens cl) {
 		super(toRange(cl));
 		update(cl);
 		this.cl = cl;
