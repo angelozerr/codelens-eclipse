@@ -5,14 +5,21 @@ import org.eclipse.jface.text.provisional.codelens.Range;
 
 public class JavaCodeLens extends CodeLens {
 
-	public JavaCodeLens(Range range) {
+	private final String type;
+
+	public JavaCodeLens(Range range, String type) {
 		super(range);
+		this.type = type;
 	}
 
 	@Override
 	public void open() {
 		// TODO Auto-generated method stub
-		
+
+	}
+	
+	public String getType() {
+		return type;
 	}
 
 }

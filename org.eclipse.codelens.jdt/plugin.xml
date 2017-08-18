@@ -23,16 +23,10 @@
 	 
 	<extension
       point="org.eclipse.codelens.codeLensProviders">
-       <!-- Java "references" CodeLens -->
+       <!-- Java  CodeLens -->
 	   <codeLensProvider
-	   		 name="%JavaReferencesCodeLensProvider.name"
-	         class="org.eclipse.codelens.jdt.internal.JavaReferencesCodeLensProvider"
-	         targetId="java.codelens">
-	   </codeLensProvider>
-	   <!-- Java "implementations" CodeLens -->
-	   <codeLensProvider
-	   		 name="%JavaImplementationsCodeLensProvider.name"
-	         class="org.eclipse.codelens.jdt.internal.JavaImplementationsCodeLensProvider"
+	   		 name="%JavaCodeLensProvider.name"
+	         class="org.eclipse.codelens.jdt.internal.JavaCodeLensProvider"
 	         targetId="java.codelens">
 	   </codeLensProvider>
 	</extension>

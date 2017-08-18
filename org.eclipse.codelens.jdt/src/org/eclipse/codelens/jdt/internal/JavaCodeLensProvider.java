@@ -40,7 +40,7 @@ import org.eclipse.jface.text.provisional.codelens.Range;
  * @see https://github.com/eclipse/eclipse.jdt.ls/blob/master/org.eclipse.jdt.ls.core/src/org/eclipse/jdt/ls/core/internal/handlers/CodeLensHandler.java
  *
  */
-public class JavaReferencesCodeLensProvider extends AbstractSyncCodeLensProvider {
+public class JavaCodeLensProvider extends AbstractSyncCodeLensProvider {
 
 	private static final String IMPLEMENTATION_TYPE = "implementations";
 	private static final String REFERENCES_TYPE = "references";
@@ -116,7 +116,7 @@ public class JavaReferencesCodeLensProvider extends AbstractSyncCodeLensProvider
 		ISourceRange r = ((ISourceReference) element).getNameRange();
 		final Range range = JDTUtils.toRange(unit, r.getOffset(), r.getLength());
 
-		ICodeLens lens = new JavaCodeLens(range);
+		ICodeLens lens = new JavaCodeLens(range, type);
 
 		// String uri = ResourceUtils.toClientUri(JDTUtils.getFileURI(unit));
 		// lens.setData(Arrays.asList(uri, range.getStart(), type));
@@ -135,9 +135,20 @@ public class JavaReferencesCodeLensProvider extends AbstractSyncCodeLensProvider
 		Range range = lens.getRange();
 		try {
 			IJavaElement element = JDTUtils.findElementAtSelection(unit, range);
-			List<Location> references = findReferences(element, monitor);
-			int refCount = references.size();
-			((JavaCodeLens) lens).setCommand(new Command(refCount + " references", ""));
+			JavaCodeLens javaLens = ((JavaCodeLens) lens);
+			String type = javaLens.getType();
+			if (REFERENCES_TYPE.equals(type)) {
+				List<Location> references = findReferences(element, monitor);
+				int refCount = references.size();
+				javaLens.setCommand(new Command(refCount + " references", ""));
+			} else if (IMPLEMENTATION_TYPE.equals(type)) {
+				if (element instanceof IType) {
+					List<Location> references = findImplementations((IType) element, monitor);
+					int refCount = references.size();
+					javaLens.setCommand(new Command(refCount + " implementations", ""));
+				}
+			}
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -173,6 +184,20 @@ public class JavaReferencesCodeLensProvider extends AbstractSyncCodeLensProvider
 					}
 				}, monitor);
 
+		return result;
+	}
+
+	private List<Location> findImplementations(IType type, IProgressMonitor monitor) throws JavaModelException {
+		IType[] results = type.newTypeHierarchy(monitor).getAllSubtypes(type);
+		final List<Location> result = new ArrayList<>();
+		for (IType t : results) {
+			ICompilationUnit compilationUnit = (ICompilationUnit) t.getAncestor(IJavaElement.COMPILATION_UNIT);
+			if (compilationUnit == null) {
+				continue;
+			}
+			Location location = null; // JDTUtils.toLocation(t);
+			result.add(location);
+		}
 		return result;
 	}
 
