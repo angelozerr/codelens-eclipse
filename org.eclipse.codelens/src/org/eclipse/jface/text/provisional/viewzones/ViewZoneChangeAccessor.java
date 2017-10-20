@@ -44,6 +44,9 @@ public class ViewZoneChangeAccessor implements IViewZoneChangeAccessor, ILineSpa
 
 		@Override
 		public void mouseDown(MouseEvent event) {
+			if (hoveredZone != null && hoveredZone.isDisposed()) {
+				hoveredZone = null;
+			}
 			if (event.button == 1 && hoveredZone != null) {
 				hoveredZone.onMouseClick(event);
 			}
@@ -87,8 +90,10 @@ public class ViewZoneChangeAccessor implements IViewZoneChangeAccessor, ILineSpa
 					}
 				}
 			} else if (hoveredZone != null) {
-				hoveredZone.mouseExit(event);
-				layoutZone(hoveredZone);
+				if (!hoveredZone.isDisposed()) {
+					hoveredZone.mouseExit(event);
+					layoutZone(hoveredZone);
+				}
 				hoveredZone = null;
 			}
 		}
@@ -318,8 +323,9 @@ public class ViewZoneChangeAccessor implements IViewZoneChangeAccessor, ILineSpa
 				int lineNumber = getLineNumber(lineIndex) - 1;
 				IViewZone viewZone = getViewZone(lineNumber);
 				if (viewZone != null) {
-					int offset = fTextWidget.getOffsetAtLine(lineIndex) + getLeadingSpaces(fTextWidget.getLine(lineIndex));
-					//JFaceTextUtil.modelLineToWidgetLine(viewer, modelLine)
+					int offset = fTextWidget.getOffsetAtLine(lineIndex)
+							+ getLeadingSpaces(fTextWidget.getLine(lineIndex));
+					// JFaceTextUtil.modelLineToWidgetLine(viewer, modelLine)
 					Point topLeft = fTextWidget.getLocationAtOffset(offset);
 					y = topLeft.y; // fTextWidget.getLinePixel(lineIndex);
 					viewZone.draw(x, topLeft.x, y - viewZone.getHeightInPx(), gc);
