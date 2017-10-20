@@ -80,8 +80,12 @@ public class CodeLensStrategy implements IReconcilingStrategy, IReconcilingStrat
 							return Collections.emptyList();
 						}
 						try {
-							ICodeLens[] lenses = provider.provideCodeLenses(context, getProgressMonitor()).get();
-							fillData(symbols, provider, lenses);
+							CompletableFuture<ICodeLens[]> f = provider.provideCodeLenses(context,
+									getProgressMonitor());
+							if (f != null) {
+								ICodeLens[] lenses = f.get();
+								fillData(symbols, provider, lenses);
+							}
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
