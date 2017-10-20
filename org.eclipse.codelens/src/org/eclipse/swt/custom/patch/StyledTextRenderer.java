@@ -29,6 +29,8 @@ public class StyledTextRenderer extends StyledTextRendererEmulator {
 
 	private final StyledText styledText;
 
+	private boolean computing;
+
 	public StyledTextRenderer(StyledText styledText) {
 		this.styledText = styledText;
 	}
@@ -52,15 +54,25 @@ public class StyledTextRenderer extends StyledTextRendererEmulator {
 		if (layout.getSpacing() != newSpacing) {
 			// Update line spacing
 			layout.setSpacing(newSpacing);
-			// System.err.println("spacing changed [" + lineIndex + "] to " +
-			// newSpacing);
 
-			// invalidate text layout.
-			// call styledText.setVariableLineHeight();
-			StyledTextPatcher.setVariableLineHeight(styledText);
 
 			// recreate text layout.
 			layout = super.getTextLayout(lineIndex, orientation, width, newSpacing, obj, proceed, args);
+			
+			if (computing) {
+				return layout;
+			}
+			try {
+				computing = true;
+				// Call same code than StyledText#setLineSpacing
+				StyledTextPatcher.setVariableLineHeight(styledText);
+				StyledTextPatcher.resetCache(styledText, lineIndex, 1);
+				StyledTextPatcher.setCaretLocation(styledText);
+//				styledText.redraw();
+			}
+			finally {
+				computing = false;
+			}
 		}
 		return layout;
 	}

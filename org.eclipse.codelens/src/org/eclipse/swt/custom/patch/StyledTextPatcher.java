@@ -31,7 +31,26 @@ public class StyledTextPatcher {
 			Method m1 = styledText.getClass().getDeclaredMethod("setVariableLineHeight");
 			m1.setAccessible(true);
 			m1.invoke(styledText);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
+	public static void resetCache(StyledText styledText, int firstLine, int count) {
+		try {
+			Method m1 = styledText.getClass().getDeclaredMethod("resetCache", int.class, int.class);
+			m1.setAccessible(true);
+			m1.invoke(styledText, firstLine, count);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void setCaretLocation(StyledText styledText) {
+		try {
+			Method m1 = styledText.getClass().getDeclaredMethod("setCaretLocation");
+			m1.setAccessible(true);
+			m1.invoke(styledText);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -39,8 +58,7 @@ public class StyledTextPatcher {
 
 	/**
 	 * This method should be replaced with
-	 * StyledText#setLineSpacingProvider(ILineSpacingProvider
-	 * lineSpacingProvider);
+	 * StyledText#setLineSpacingProvider(ILineSpacingProvider lineSpacingProvider);
 	 * 
 	 * @param styledText
 	 * @param lineSpacingProvider
