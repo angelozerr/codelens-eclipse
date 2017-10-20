@@ -148,4 +148,11 @@ public class CodeLensViewZone extends ViewZone {
 		return counter;
 	}
 
+	@Override
+	public void dispose() {
+		StyledText styledText = getTextViewer().getTextWidget();
+		styledText.getDisplay().syncExec(() -> styledText.setCursor(null));
+		super.dispose();
+	}
+
 }
