@@ -1,5 +1,7 @@
 # codelens-eclipse
 
+[![Build Status](https://secure.travis-ci.org/angelozerr/codelens-eclipse.png)](http://travis-ci.org/angelozerr/codelens-eclipse)
+
 It exists today 2 bugs for implementing CodeLens inside Eclipse: bug [508458](https://bugs.eclipse.org/bugs/show_bug.cgi?id=508458) and [501546](https://bugs.eclipse.org/bugs/show_bug.cgi?id=501546).
 
 Today Javassist is required because there are 2 problems in Eclipse Platform:
