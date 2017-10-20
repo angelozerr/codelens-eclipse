@@ -8,7 +8,7 @@ public abstract class CodeLens implements ICodeLens {
 	public CodeLens(int startLineNumber) {
 		this(new Range(startLineNumber, 1));
 	}
-	
+
 	public CodeLens(Range range) {
 		this.range = range;
 	}
@@ -27,7 +27,7 @@ public abstract class CodeLens implements ICodeLens {
 	public ICommand getCommand() {
 		return command;
 	}
-	
+
 	public void setCommand(ICommand command) {
 		this.command = command;
 	}
