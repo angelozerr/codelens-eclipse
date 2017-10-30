@@ -150,8 +150,10 @@ public class CodeLensViewZone extends ViewZone {
 
 	@Override
 	public void dispose() {
-		StyledText styledText = getTextViewer().getTextWidget();
-		styledText.getDisplay().syncExec(() -> styledText.setCursor(null));
+		if (!isDisposed()) {
+			StyledText styledText = getTextViewer().getTextWidget();
+			styledText.getDisplay().syncExec(() -> styledText.setCursor(null));
+		}
 		super.dispose();
 	}
 
