@@ -92,7 +92,7 @@ public class StyledTextPatcher {
 		// Create a Javassist proxy
 		ProxyFactory factory = new ProxyFactory();
 		factory.setSuperclass(originalRenderer.getClass());
-		StyledTextRenderer renderer = new StyledTextRenderer(styledText);
+		StyledTextRenderer renderer = new StyledTextRenderer(styledText, originalRenderer.getClass());
 		renderer.setLineSpacingProvider(lineSpacingProvider);
 		factory.setHandler(renderer);
 		return factory.create(new Class[] { Device.class, StyledText.class },
